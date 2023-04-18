@@ -75,10 +75,14 @@ int main() {
 			}
 			// Draw map and player every frame and listen for input
 			draw_map(ncols, nrows, map);
+			attron(COLOR_PAIR(COLOR_BLUE));
+			attron(A_BOLD);
 			mvprintw(player.y, player.x, "@");
+			attroff(A_BOLD);
+			attroff(COLOR_PAIR(COLOR_BLUE));
 			// add player x and y to map as a 2 (so we can calculate the vision path and intersect with walls)
 			map[player.x][player.y] = 2; // TODO: fix, remove 2 from the last position
-			draw_debug_window(ncols, nrows, map, &player);
+			draw_debug_window(ncols, nrows, &player);
 			update(ncols, nrows, map, &player);
 		}
 		refresh(); // Update the screen

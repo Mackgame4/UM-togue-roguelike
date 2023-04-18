@@ -1,7 +1,7 @@
 #include <ncurses.h>
 #include <stdbool.h>
 
-bool DEBUG = true;
+bool DEBUG = false;
 
 void draw_rectangle(int y1, int x1, int y2, int x2)
 {
@@ -15,7 +15,7 @@ void draw_rectangle(int y1, int x1, int y2, int x2)
     mvaddch(y2, x2, ACS_LRCORNER);
 }
 
-void draw_debug_window(int ncols, int nrows, int map[ncols][nrows], PLAYER *player) {
+void draw_debug_window(int ncols, int nrows, /*int map[ncols][nrows],*/ PLAYER *player) {
     if (DEBUG) {
         draw_rectangle(0, 0, 10, 30);
         attron(COLOR_PAIR(COLOR_BLUE));
