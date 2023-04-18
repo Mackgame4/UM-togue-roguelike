@@ -14,10 +14,14 @@
 // nrows and ncols should be 1 to close the map
 
 // values that can be changed to make the map more or less random
-int agglutination = 63;
-int cluster_size = 37;
-int min_empty_space = 85;
+int agglutination = 63; // the bigger the more agglutinated the clusters will be and more space will be left between them so the player can move
+int cluster_size = 37; // the bigger the clusters will be
+int min_empty_space = 85; // minimum empty space between clusters to player to pass through
 
+// TODO: make sure theres a path from one side of the map to the other
+// add an "x" as exit of the map (go to next level) and make sure theres a path to it
+// fix the player spawning in middle of clusters (fill them with walls)
+// fix the random algorithm that is moving the boundaries of the map and making holes in it (map must be closed) -> maybe try putting the boundaries in the end of the map generation
 void generate_map(int ncols, int nrows, int map[ncols][nrows]) {
     // create map boundaries
     for (int i = 0; i < ncols; i++) {
