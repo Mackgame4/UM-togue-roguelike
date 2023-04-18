@@ -68,7 +68,7 @@ int main() {
 		} else {
 			// Only execute this code once (setup the game)
 			if (!is_game_ready) {
-				generate_map(ncols, nrows, map);
+				generate_map(ncols, nrows, map); // TODO: generate a new map every time the player dies/goes to the menu
 				player.x = get_random_free_space(ncols, nrows, map)[0];
 				player.y = get_random_free_space(ncols, nrows, map)[1];
 				is_game_ready = true;
