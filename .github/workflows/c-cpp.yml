@@ -12,12 +12,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    # Checkout the repository
     - uses: actions/checkout@v3
-    - name: configure
-      run: ./configure
-    - name: make
+    # Install dependencies
+    - name: Install dependencies
+      run: sudo apt-get install gcc && sudo apt-get install libncurses-dev && sudo apt-get install make
+    # Build the project
+    - name: Build
       run: make
-    - name: make check
-      run: make check
-    - name: make distcheck
-      run: make distcheck
+    # Test rebuild
+    - name: Test rebuild
+      run: make rebuild
