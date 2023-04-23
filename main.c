@@ -20,13 +20,37 @@ bool is_game_ready = false;
 void update(int ncols, int nrows, int map[ncols][nrows], PLAYER *player) {
     int key = getch();
     switch(key) {
-        case KEY_UP: if (map[player->x][player->y-1] != 1) { player->y--; } break;
-        case KEY_DOWN: if (map[player->x][player->y+1] != 1) { player->y++; } break;
-        case KEY_LEFT: if (map[player->x-1][player->y] != 1) { player->x--; } break;
-        case KEY_RIGHT: if (map[player->x+1][player->y] != 1) { player->x++; } break;
+        case KEY_UP: if (map[player->x][player->y-1] != 1) {
+			map[player->x][player->y] = 0;
+			player->y--;
+			map[player->x][player->y] = 2; // add player x and y to map as a 2 (so we can calculate the vision path and intersect with walls)
+			} break;
+        case KEY_DOWN: if (map[player->x][player->y+1] != 1) {
+			map[player->x][player->y] = 0;
+			player->y++;
+			map[player->x][player->y] = 2;
+			} break;
+        case KEY_LEFT: if (map[player->x-1][player->y] != 1) {
+			map[player->x][player->y] = 0;
+			player->x--;
+			map[player->x][player->y] = 2;
+			} break;
+        case KEY_RIGHT: if (map[player->x+1][player->y] != 1) {
+			map[player->x][player->y] = 0;
+			player->x++;
+			map[player->x][player->y] = 2;
+			} break;
         case 27: in_menu = true; break; // 27 is the escape key
         case 113: in_menu = true; break; // 113 is the q key
     }
+}
+
+void draw_player(PLAYER player) {
+	attron(COLOR_PAIR(COLOR_BLUE));
+	attron(A_BOLD);
+	mvprintw(player.y, player.x, "@");
+	attroff(A_BOLD);
+	attroff(COLOR_PAIR(COLOR_BLUE));
 }
 
 int main() {
@@ -76,14 +100,8 @@ int main() {
 			}
 			// Draw map and player every frame and listen for input
 			draw_map(ncols, nrows, map);
-			attron(COLOR_PAIR(COLOR_BLUE));
-			attron(A_BOLD);
-			mvprintw(player.y, player.x, "@");
-			attroff(A_BOLD);
-			attroff(COLOR_PAIR(COLOR_BLUE));
-			// add player x and y to map as a 2 (so we can calculate the vision path and intersect with walls)
-			map[player.x][player.y] = 2; // TODO: fix, remove 2 from the last position
-			draw_debug_window(ncols, nrows, &player);
+			draw_player(player);
+			draw_debug_window(ncols, nrows, map, &player);
 			update(ncols, nrows, map, &player);
 		}
 		refresh(); // Update the screen
