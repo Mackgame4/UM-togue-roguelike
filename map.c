@@ -10,23 +10,22 @@
 4 - chest
 5 - door
 */
-// generate a map with walls 1 and empty space 0
-// nrows and ncols should be 1 to close the map
 
 // values that can be changed to make the map more or less random
-int agglutination = 63; // the bigger the more agglutinated the clusters will be and more space will be left between them so the player can move
-int cluster_size = 37; // the bigger the clusters will be
-int min_empty_space = 85; // minimum empty space between clusters to player to pass through
+int agglutination = 38; // chance of a rock to spawn
+int min_empty_space = 15; // minimum empty space between clusters to player to pass through
 
 // TODO: make sure theres a path from one side of the map to the other
 // add an "x" as exit of the map (go to next level) and make sure theres a path to it
-// fix the player spawning in middle of clusters (fill them with walls)
-// fix the random algorithm that is moving the boundaries of the map and making holes in it (map must be closed) -> maybe try putting the boundaries in the end of the map generation
 void generate_map(int ncols, int nrows, int map[ncols][nrows]) {
-    // create map boundaries
+    // Set the random seed
+    srand(time(NULL));
+
+    // Fill the map with random rocks
     for (int i = 0; i < ncols; i++) {
         for (int j = 0; j < nrows; j++) {
-            if (i == 0 || i == ncols - 1 || j == 0 || j == nrows - 1) {
+            if ((rand() % 100) < 40) {
+                // Set a random chance for a rock to spawn
                 map[i][j] = 1;
             } else {
                 map[i][j] = 0;
@@ -34,50 +33,43 @@ void generate_map(int ncols, int nrows, int map[ncols][nrows]) {
         }
     }
 
-    srand(time(NULL));
-    // create clusters of "#" tiles
-    for (int i = 0; i < ncols; i++) {
-        for (int j = 0; j < nrows; j++) {
-            if (map[i][j] == 0) {
-                if (rand() % agglutination == 0) {
-                    // generate a cluster of "#" tiles
-                    int cluster_x = i;
-                    int cluster_y = j;
-                    for (int k = 0; k < cluster_size; k++) {
-                        int dx = rand() % 3 - 1;
-                        int dy = rand() % 3 - 1;
-                        if (dx == 0 && dy == 0) {
-                            // make sure the center of the cluster is empty
-                            map[cluster_x][cluster_y] = 0;
-                        } else if (cluster_x + dx >= 0 && cluster_x + dx < ncols && 
-                                   cluster_y + dy >= 0 && cluster_y + dy < nrows) {
-                            // add a "#" tile to the cluster
-                            cluster_x += dx;
-                            cluster_y += dy;
-                            map[cluster_x][cluster_y] = 1;
+    // Smooth out the cave
+    for (int i = 0; i < 5; i++) {
+        for (int x = 1; x < ncols - 1; x++) {
+            for (int y = 1; y < nrows - 1; y++) {
+                int count = 0;
+                for (int dx = -1; dx <= 1; dx++) {
+                    for (int dy = -1; dy <= 1; dy++) {
+                        if (map[x + dx][y + dy] == 1) {
+                            count++;
                         }
                     }
-                    // add empty space around the cluster
-                    for (int k = 0; k < min_empty_space; k++) {
-                        int dx = rand() % 3 - 1;
-                        int dy = rand() % 3 - 1;
-                        if (cluster_x + dx >= 0 && cluster_x + dx < ncols && 
-                                   cluster_y + dy >= 0 && cluster_y + dy < nrows &&
-                                   map[cluster_x + dx][cluster_y + dy] == 0) {
-                            // add an empty tile
-                            map[cluster_x + dx][cluster_y + dy] = -1;
-                        }
-                    }
+                }
+                if (count > 4) {
+                    map[x][y] = 1;
+                } else if (count < 3) {
+                    map[x][y] = 0;
                 }
             }
         }
     }
 
-    // replace empty tiles with 0
+    // Revert all the map, where 1 put 0, and 0 put 1
     for (int i = 0; i < ncols; i++) {
         for (int j = 0; j < nrows; j++) {
-            if (map[i][j] == -1) {
+            if (map[i][j] == 1) {
                 map[i][j] = 0;
+            } else {
+                map[i][j] = 1;
+            }
+        }
+    }
+
+    // Draw boundaries
+    for (int i = 0; i < ncols; i++) {
+        for (int j = 0; j < nrows; j++) {
+            if (j == 0 || j == nrows - 1 || i == 0 || i == ncols - 1) {
+                map[i][j] = 1;
             }
         }
     }
@@ -104,6 +96,21 @@ int* get_random_free_space(int ncols, int nrows, int map[ncols][nrows]) {
         x = rand() % ncols;
         y = rand() % nrows;
     } while (map[x][y] != 0);
+    static int coords[2]; // static so that the array is not destroyed after the function ends (it is destroyed after the function ends if it is not static)
+    // or: int* coords = malloc(2 * sizeof(int));
+    coords[0] = x;
+    coords[1] = y;
+    return coords;
+}
+
+// get random free space with a minimum distance from a wall (to avoid spawning player/enemies inside walls)
+int min_distance = 5;
+int* get_random_free_space_with_min_distance_from_wall(int ncols, int nrows, int map[ncols][nrows]) {
+    int x, y;
+    do {
+        x = rand() % ncols;
+        y = rand() % nrows;
+    } while (map[x][y] != 0 || x < min_distance || x > ncols - min_distance || y < min_distance || y > nrows - min_distance);
     static int coords[2]; // static so that the array is not destroyed after the function ends (it is destroyed after the function ends if it is not static)
     // or: int* coords = malloc(2 * sizeof(int));
     coords[0] = x;

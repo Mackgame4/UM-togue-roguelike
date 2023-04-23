@@ -69,8 +69,8 @@ int main() {
 			// Only execute this code once (setup the game)
 			if (!is_game_ready) {
 				generate_map(ncols, nrows, map); // TODO: generate a new map every time the player dies/goes to the menu
-				player.x = get_random_free_space(ncols, nrows, map)[0];
-				player.y = get_random_free_space(ncols, nrows, map)[1];
+				player.x = get_random_free_space_with_min_distance_from_wall(ncols, nrows, map)[0];
+				player.y = get_random_free_space_with_min_distance_from_wall(ncols, nrows, map)[1];
 				is_game_ready = true;
 			}
 			// Draw map and player every frame and listen for input
