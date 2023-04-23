@@ -58,6 +58,7 @@ int main() {
 		//clear(); // Clear the screen every frame (to avoid drawing on top of the previous frame, aka update)
 		erase(); // Erase the contents of the window (leaving the background color intact)
 		if (in_menu) {
+			is_game_ready = false;
 			int selected_option = draw_menu(ncols, nrows);
 			if (selected_option == 0) {
 				in_menu = false;
@@ -68,7 +69,7 @@ int main() {
 		} else {
 			// Only execute this code once (setup the game)
 			if (!is_game_ready) {
-				generate_map(ncols, nrows, map); // TODO: generate a new map every time the player dies/goes to the menu
+				generate_map(ncols, nrows, map);
 				player.x = get_random_free_space_with_min_distance_from_wall(ncols, nrows, map)[0];
 				player.y = get_random_free_space_with_min_distance_from_wall(ncols, nrows, map)[1];
 				is_game_ready = true;
