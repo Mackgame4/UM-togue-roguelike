@@ -20,10 +20,10 @@ struct player {
 typedef struct player PLAYER;
 
 // enemy state
-/*struct enemy {
+struct enemy {
 	int type;
 	int x;
 	int y;
 	int health;
 };
-typedef struct enemy ENEMY;*/
+typedef struct enemy ENEMY;
