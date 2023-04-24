@@ -1,14 +1,12 @@
 // declares "PLAYER" AND ENEMY" classes
 
-//#define PLAYER_DAMAGE 10
-
 // define numbers to represent different types of tiles in the map (prevents errors later)
-/*#define EMPTY 0
-#define WALL 1
-#define VISIBLE_WALL 2
-#define PLAYER 3
-#define ENEMY 4
-#define VISIBLE_ENEMY 5*/
+#define EMPTY_ID 0
+#define WALL_ID 1
+#define PLAYER_ID 2
+#define ENEMY_ID 3
+#define CHEST_ID 4
+#define DOOR_ID 5
 
 // player state
 struct player {

@@ -75,15 +75,12 @@ void generate_map(int ncols, int nrows, int map[ncols][nrows]) {
     }
 }
 
-
 // function that draws "#" as walls 1, and " " as empty space 0
 void draw_map(int ncols, int nrows, int map[ncols][nrows]) {
     for (int i = 0; i < ncols; i++) {
         for (int j = 0; j < nrows; j++) {
             if (map[i][j] == 1) {
                 mvprintw(j, i, "#");
-            } else {
-                mvprintw(j, i, " ");
             }
         }
     }
