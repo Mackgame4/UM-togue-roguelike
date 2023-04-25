@@ -54,7 +54,6 @@ void draw_notification(int ncols, int nrows, char *message) {
 }
 
 void initialize_colors() {
-	// init_pair(nome, cor, bgcor)
 	init_pair(COLOR_BLACK, COLOR_BLACK, COLOR_BLACK); // Initialize color pairs to black
 	init_pair(COLOR_WHITE, COLOR_WHITE, COLOR_BLACK); // White
 	init_pair(COLOR_RED, COLOR_RED, COLOR_BLACK); // Red
