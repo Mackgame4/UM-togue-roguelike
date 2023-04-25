@@ -1,9 +1,19 @@
 # Togue - Your text based rogue-like game
 <p align="center"><img src="https://i.imgur.com/tgatpXW.png" alt="Togue Roguelike" width="400"/></p>
 
-### <p align="center">[How To Play](#how-to-play) | [Installation](/INSTALLATION.md#build)</p>
+### <p align="center">[Repository](https://github.com/Mackgame4/togue-roguelike) [How To Play](#how-to-play) | [Installation](/INSTALLATION.md#build)</p>
 
 **Togue it's a text based inspired rogue-like game were you are a hero that must fight monsters and collect items to get to the next level exiting the dungeon. Each level is randomly generated and the game is over when you die.**
+
+#### TODO List
+- [x] Make the game playable;
+- [x] Add monsters;
+- [ ] Add items/chests;
+- [ ] Add door;
+- [ ] Fix map generation (make sure theres a way to exit the dungeon);
+- [ ] Combat;
+- [ ] Player vision;
+- [ ] Make monsters follow the player/attack;
 
 ### How To Play
 In this game you are a hero "**@**" that must fight different types of monsters "**z**"/"**j**"/etc. and collect chest items "**c**" to get to the next level exiting the dungeon "**x**".
