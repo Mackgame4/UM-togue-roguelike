@@ -101,15 +101,14 @@ int* get_random_free_space(int ncols, int nrows, int map[ncols][nrows]) {
 }
 
 // get random free space with a minimum distance from a wall (to avoid spawning player/enemies inside walls)
-int min_distance = 5;
+int min_distance = 8;
 int* get_random_free_space_with_min_distance_from_wall(int ncols, int nrows, int map[ncols][nrows]) {
     int x, y;
     do {
-        x = rand() % ncols;
-        y = rand() % nrows;
-    } while (map[x][y] != 0 || x < min_distance || x > ncols - min_distance || y < min_distance || y > nrows - min_distance);
-    static int coords[2]; // static so that the array is not destroyed after the function ends (it is destroyed after the function ends if it is not static)
-    // or: int* coords = malloc(2 * sizeof(int));
+        x = rand() % (ncols - 2 * min_distance) + min_distance;
+        y = rand() % (nrows - 2 * min_distance) + min_distance;
+    } while (map[x][y] != 0);
+    static int coords[2];
     coords[0] = x;
     coords[1] = y;
     return coords;

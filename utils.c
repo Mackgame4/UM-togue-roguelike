@@ -1,5 +1,6 @@
 #include <ncurses.h>
 #include <stdbool.h>
+#include <string.h>
 
 bool DEBUG = false;
 
@@ -36,6 +37,20 @@ void draw_debug_window(int ncols, int nrows, int map[ncols][nrows], PLAYER *play
             }
         }*/
     }
+}
+
+int notify = 0;
+void draw_notification(int ncols, int nrows, char *message) {
+    int text_length = strlen(message);
+    draw_rectangle(nrows/2-2, ncols/2-text_length/2-1, nrows/2, ncols/2+text_length/2+1);
+    attron(A_BOLD);
+    attron(COLOR_PAIR(COLOR_RED));
+    mvprintw(nrows/2-1, ncols/2-text_length/2, "%s", message);
+    attroff(COLOR_PAIR(COLOR_RED));
+    attron(A_REVERSE);
+    mvprintw(nrows/2, ncols/2, "OK");
+    attroff(A_REVERSE);
+    attroff(A_BOLD);
 }
 
 void initialize_colors() {

@@ -13,8 +13,8 @@
 #include "utils.c"
 #include "enemies.c"
 
-//bool is_paused = false; // pause the game when a notification is displayed
-//bool is_game_over = false;
+bool is_paused = false; // pause the game when a notification is displayed
+char *notification = "The game is paused. Press P to continue.";
 bool in_menu = true;
 bool is_game_ready = false;
 
@@ -43,6 +43,8 @@ void update(int ncols, int nrows, int map[ncols][nrows], PLAYER *player) {
 			} break;
         case 27: in_menu = true; break; // 27 is the escape key
         case 113: in_menu = true; break; // 113 is the q key
+		case 112: is_paused = !is_paused; break; // 112 is the p key
+		case 32: is_paused = false; break; // 32 is the space key
     }
 }
 
@@ -78,8 +80,10 @@ int main() {
 	player.y = 1;
 	player.health = 100;
 
-	int max_enemies = 10;
+	int max_enemies = 5;
 	ENEMY enemies[max_enemies];
+
+	int enemy_count = 0;
 
 	// Game loop
 	while(1) {
@@ -100,13 +104,16 @@ int main() {
 				generate_map(ncols, nrows, map);
 				player.x = get_random_free_space_with_min_distance_from_wall(ncols, nrows, map)[0];
 				player.y = get_random_free_space_with_min_distance_from_wall(ncols, nrows, map)[1];
-				generate_enemies(ncols, nrows, map, enemies, max_enemies);
+				enemy_count = generate_enemies(ncols, nrows, map, enemies, max_enemies);
 				is_game_ready = true;
 			}
 			// Draw map and player every frame and listen for input
 			draw_map(ncols, nrows, map);
 			draw_player(player);
-			draw_enemies(enemies, max_enemies);
+			draw_enemies(enemies, enemy_count);
+			if (is_paused) {
+				draw_notification(ncols, nrows, notification);
+			}
 			draw_debug_window(ncols, nrows, map, &player);
 			update(ncols, nrows, map, &player);
 		}

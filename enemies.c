@@ -1,20 +1,24 @@
-void generate_enemies(int ncols, int nrows, int map[ncols][nrows], ENEMY enemies[], int max_enemies) {
-    for (int i = 0; i < max_enemies; i++) {
-        enemies[i].x = rand() % ncols;
-        enemies[i].y = rand() % nrows;
+int generate_enemies(int ncols, int nrows, int map[ncols][nrows], ENEMY enemies[], int max_enemies) {
+    int enemy_count = 0;
+    int random_enemy_count = rand() % max_enemies + 1; // 1 - max_enemies
+    for (int i = 0; i < random_enemy_count; i++) {
+        enemies[i].x = get_random_free_space_with_min_distance_from_wall(ncols, nrows, map)[0];
+        enemies[i].y = get_random_free_space_with_min_distance_from_wall(ncols, nrows, map)[1];
         enemies[i].health = 100;
         enemies[i].type = rand() % 3;
         map[enemies[i].x][enemies[i].y] = 3;
+        enemy_count++;
     }
+    return enemy_count;
 }
 
 // if type is 0, it's a zombien "z"
 // if type is 1, it's a skeleton "s"
 // if type is 2, it's a ghost "g"
-void draw_enemies(ENEMY enemies[], int max_enemies) {
+void draw_enemies(ENEMY enemies[], int enemy_count) {
     attron(COLOR_PAIR(COLOR_RED));
     attron(A_BOLD);
-    for (int i = 0; i < max_enemies; i++) {
+    for (int i = 0; i < enemy_count; i++) {
         if (enemies[i].type == 0) {
             mvprintw(enemies[i].y, enemies[i].x, "z");
         } else if (enemies[i].type == 1) {
