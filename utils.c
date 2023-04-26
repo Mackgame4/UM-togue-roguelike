@@ -31,11 +31,17 @@ void draw_debug_window(int ncols, int nrows, int map[ncols][nrows], PLAYER *play
         mvprintw(6, 1, "player.health: %d", player->health);
         // draw map
         mvprintw(7, 1, "map ready: %d", map[0][0]);
-        /*for (int i = 0; i < ncols; i++) {
+        for (int i = 0; i < ncols; i++) {
             for (int j = 0; j < nrows; j++) {
-                mvprintw(8+j, 1+i, "%d", map[i][j]);
+                if (map[i][j] == 2) attron(COLOR_PAIR(COLOR_BLUE));
+                else if (map[i][j] == 3) attron(COLOR_PAIR(COLOR_RED));
+                else if (map[i][j] == 4) attron(COLOR_PAIR(COLOR_YELLOW));
+                //mvprintw(j+8, i+1, "%d", map[i][j]);
+                mvprintw(j, i, "%d", map[i][j]);
+                attroff(COLOR_PAIR(COLOR_BLUE));
+                attroff(COLOR_PAIR(COLOR_RED));
             }
-        }*/
+        }
     }
 }
 

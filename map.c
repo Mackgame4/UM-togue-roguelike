@@ -2,14 +2,60 @@
 #include <stdlib.h>
 #include <time.h>
 
-/* entitie numbers:
-0 - empty space/ground
-1 - wall
-2 - player
-3 - enemy
-4 - chest
-5 - door
-*/
+// returns vector with 2 elements: x and y
+int* get_random_free_space(int ncols, int nrows, int map[ncols][nrows]) {
+    int x, y;
+    do {
+        x = rand() % ncols;
+        y = rand() % nrows;
+    } while (map[x][y] != 0);
+    static int coords[2]; // static so that the array is not destroyed after the function ends (it is destroyed after the function ends if it is not static)
+    // or: int* coords = malloc(2 * sizeof(int));
+    coords[0] = x;
+    coords[1] = y;
+    return coords;
+}
+
+// get random free space with a minimum distance from a wall (to avoid spawning player/enemies inside walls)
+int min_distance = 8;
+int* get_random_free_space_with_min_distance_from_wall(int ncols, int nrows, int map[ncols][nrows]) {
+    // point to checkk if is x blocks near a wall
+    int x, y;
+    do {
+        x = rand() % ncols;
+        y = rand() % nrows;
+    } while (map[x][y] != 0 || x < min_distance || x > ncols - min_distance || y < min_distance || y > nrows - min_distance);
+    static int coords[2]; // static so that the array is not destroyed after the function ends (it is destroyed after the function ends if it is not static)
+    // or: int* coords = malloc(2 * sizeof(int));
+    coords[0] = x;
+    coords[1] = y;
+    return coords;
+}
+
+void generate_exit_door(int ncols, int nrows, int map[ncols][nrows]) {
+    // put a 4 (door) in a place in the map boundaries ( 0 < x < ncols-1, 0 < y < nrows-1)
+    /*if (rand() % 2 == 0) {
+        // put the door on the left or right side of the map
+        int x = rand() % (ncols - 2) + 1;
+        if (rand() % 2 == 0) {
+            map[x][0] = 4;
+        } else {
+            map[x][nrows - 1] = 4;
+        }
+    } else {
+        // put the door on the top or bottom side of the map
+        int y = rand() % (nrows - 2) + 1;
+        if (rand() % 2 == 0) {
+            map[0][y] = 4;
+        } else {
+            map[ncols - 1][y] = 4;
+        }
+    }*/
+    // make the game more fun and put it in a random place
+    int x = get_random_free_space_with_min_distance_from_wall(ncols, nrows, map)[0];
+    int y = get_random_free_space_with_min_distance_from_wall(ncols, nrows, map)[1];
+    map[x][y] = 4;
+}
 
 // values that can be changed to make the map more or less random
 int agglutination = 38; // chance of a rock to spawn
@@ -81,43 +127,25 @@ void generate_map(int ncols, int nrows, int map[ncols][nrows]) {
             }
         }
     }
+
+    // Generate an exit "x" door (number 4)
+    generate_exit_door(ncols, nrows, map);
 }
 
 // function that draws "#" as walls 1, and " " as empty space 0
+// also draws the door "x" as 4
 void draw_map(int ncols, int nrows, int map[ncols][nrows]) {
     for (int i = 0; i < ncols; i++) {
         for (int j = 0; j < nrows; j++) {
             if (map[i][j] == 1) {
                 mvprintw(j, i, "#");
+            } else if (map[i][j] == 4) {
+                attron(COLOR_PAIR(COLOR_YELLOW));
+                attron(A_BOLD);
+                mvprintw(j, i, "x");
+                attroff(A_BOLD);
+                attroff(COLOR_PAIR(COLOR_YELLOW));
             }
         }
     }
-}
-
-// returns vector with 2 elements: x and y
-int* get_random_free_space(int ncols, int nrows, int map[ncols][nrows]) {
-    int x, y;
-    do {
-        x = rand() % ncols;
-        y = rand() % nrows;
-    } while (map[x][y] != 0);
-    static int coords[2]; // static so that the array is not destroyed after the function ends (it is destroyed after the function ends if it is not static)
-    // or: int* coords = malloc(2 * sizeof(int));
-    coords[0] = x;
-    coords[1] = y;
-    return coords;
-}
-
-// get random free space with a minimum distance from a wall (to avoid spawning player/enemies inside walls)
-int min_distance = 8;
-int* get_random_free_space_with_min_distance_from_wall(int ncols, int nrows, int map[ncols][nrows]) {
-    int x, y;
-    do {
-        x = rand() % (ncols - 2 * min_distance) + min_distance;
-        y = rand() % (nrows - 2 * min_distance) + min_distance;
-    } while (map[x][y] != 0);
-    static int coords[2];
-    coords[0] = x;
-    coords[1] = y;
-    return coords;
 }
