@@ -56,6 +56,75 @@ void draw_player(PLAYER player) {
 	attroff(COLOR_PAIR(COLOR_BLUE));
 }
 
+char* get_weapon_name(int weapon) {
+	switch(weapon) {
+		case 0: return "Hand";
+		case 1: return "Knife";
+		case 2: return "Sword";
+		default: return "Hand";
+	}
+}
+
+// TODO:
+int get_weapon_damage(int weapon) {
+	switch(weapon) {
+		case 0: return 10;
+		case 1: return 15;
+		case 2: return 20;
+		default: return 10;
+	}
+}
+
+char* get_enemy_name(int enemy_type) {
+	switch(enemy_type) {
+		case 0: return "Zombie";
+		case 1: return "Skeleton";
+		case 2: return "Ghost";
+		default: return "Zombie";
+	}
+}
+
+// TODO:
+int get_enemy_damage(int enemy_type) {
+	switch(enemy_type) {
+		case 0: return 5;
+		case 1: return 15;
+		case 2: return 20;
+		default: return 5;
+	}
+}
+
+// Shows player health, weapon, and enemies health in combat
+void draw_hud(int ncols, int nrows, PLAYER player, ENEMY enemies[], int enemy_count) {
+	// Draw player health
+	attron(COLOR_PAIR(COLOR_RED));
+	attron(A_BOLD);
+	// make the player bar fit the screen width
+	int health_bar_width = player.health * ncols / 3 / 100;
+	int health_bar_max = 100 * ncols / 3 / 100;
+	draw_bar(nrows, 0, health_bar_width, health_bar_max, "Health");
+	attroff(A_BOLD);
+	attroff(COLOR_PAIR(COLOR_RED));
+	// Draw player weapon
+	attron(COLOR_PAIR(COLOR_YELLOW));
+	attron(A_BOLD);
+	mvprintw(nrows, health_bar_max-4, "Equipped: %s", get_weapon_name(player.weapon));
+	attroff(A_BOLD);
+	attroff(COLOR_PAIR(COLOR_YELLOW));
+	// Draw enemies health
+	int string_offset = strlen("Equipped: ") + strlen(get_weapon_name(player.weapon));
+	attron(COLOR_PAIR(COLOR_BLUE));
+	attron(A_BOLD);
+	mvprintw(nrows, health_bar_max+2+string_offset+2-4, "%d Enemies: ", enemy_count);
+	for (int i = 0; i < enemy_count; i++) {
+		int enemy_health_bar_width = enemies[i].health * ncols / 2 / 100 / enemy_count;
+		int enemy_health_bar_max = 100 * ncols / 2 / 100 / enemy_count;
+		draw_bar(nrows, health_bar_max+2+string_offset+2+strlen("Enemies:  ")+i*enemy_health_bar_max, enemy_health_bar_width, enemy_health_bar_max, get_enemy_name(enemies[i].type));
+	}
+	attroff(A_BOLD);
+	attroff(COLOR_PAIR(COLOR_BLUE));
+}
+
 int main() {
 	// Initialize ncurses (game window)
 	WINDOW *win = initscr();
@@ -74,11 +143,13 @@ int main() {
 	initialize_colors();
 
 	// Initialize game
+	nrows = nrows-1; // Reserve the last row for the HUD
 	int map[ncols][nrows]; // Create a map with the same size as the window
 	PLAYER player;
 	player.x = 1;
 	player.y = 1;
 	player.health = 100;
+	player.weapon = 0; // Hand
 
 	int max_enemies = 5;
 	ENEMY enemies[max_enemies];
@@ -111,6 +182,7 @@ int main() {
 			draw_map(ncols, nrows, map);
 			draw_player(player);
 			draw_enemies(enemies, enemy_count);
+			draw_hud(ncols, nrows, player, enemies, enemy_count);
 			if (is_paused) {
 				draw_notification(ncols, nrows, notification);
 			}

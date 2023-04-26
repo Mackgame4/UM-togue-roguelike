@@ -65,6 +65,14 @@ void generate_map(int ncols, int nrows, int map[ncols][nrows]) {
         }
     }
 
+    // Make sure theres a path from one side of the map to the other (left to right)
+    // LAZY FIX: draw a line from left to right using a random y postition
+    int y = rand() % (nrows - 2) + 1;
+    for (int i = 0; i < ncols; i++) {
+        map[i][y+1] = 0;
+        map[i][y] = 0;
+    }
+
     // Draw boundaries
     for (int i = 0; i < ncols; i++) {
         for (int j = 0; j < nrows; j++) {

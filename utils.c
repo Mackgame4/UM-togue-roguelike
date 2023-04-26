@@ -53,6 +53,21 @@ void draw_notification(int ncols, int nrows, char *message) {
     attroff(A_BOLD);
 }
 
+// draws a bar with a given percentage and a text inside (uses A_REVERSE to draw the bar)
+void draw_bar(int y, int x, int width, int max_width, char *text) {
+    int text_length = strlen(text);
+    int bar_width = width - text_length - 2;
+    int bar_length = (int) (bar_width * (float) width / max_width);
+    attron(A_REVERSE);
+    //mvhline(y, x, 0, bar_length);
+    // or: draw a bar without a line
+    for (int i = 0; i < bar_length; i++) {
+        mvaddch(y, x+i, ' ');
+    }
+    mvprintw(y, x+bar_length/2-text_length/2, "%s", text); // put text inside bar in the middle
+    attroff(A_REVERSE);
+}
+
 void initialize_colors() {
 	// init_pair(nome, cor, bgcor)
 	init_pair(COLOR_BLACK, COLOR_BLACK, COLOR_BLACK); // Initialize color pairs to black

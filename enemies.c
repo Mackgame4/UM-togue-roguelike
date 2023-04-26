@@ -12,7 +12,7 @@ int generate_enemies(int ncols, int nrows, int map[ncols][nrows], ENEMY enemies[
     return enemy_count;
 }
 
-// if type is 0, it's a zombien "z"
+// if type is 0, it's a zombie "z"
 // if type is 1, it's a skeleton "s"
 // if type is 2, it's a ghost "g"
 void draw_enemies(ENEMY enemies[], int enemy_count) {

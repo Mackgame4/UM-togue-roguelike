@@ -13,7 +13,7 @@ struct player {
 	int x;
 	int y;
 	int health;
-	// TODO: add inventory
+	int weapon; // TODO: add inventory
 };
 typedef struct player PLAYER;
 
