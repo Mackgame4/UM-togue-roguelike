@@ -32,7 +32,9 @@ int* get_random_free_space_with_min_distance_from_wall(int ncols, int nrows, int
     return coords;
 }
 
-void generate_exit_door(int ncols, int nrows, int map[ncols][nrows]) {
+#define MAX_ITEMS 3
+
+void generate_especial_items(int ncols, int nrows, int map[ncols][nrows]) {
     // put a 4 (door) in a place in the map boundaries ( 0 < x < ncols-1, 0 < y < nrows-1)
     /*if (rand() % 2 == 0) {
         // put the door on the left or right side of the map
@@ -52,9 +54,16 @@ void generate_exit_door(int ncols, int nrows, int map[ncols][nrows]) {
         }
     }*/
     // make the game more fun and put it in a random place
-    int x = get_random_free_space_with_min_distance_from_wall(ncols, nrows, map)[0];
-    int y = get_random_free_space_with_min_distance_from_wall(ncols, nrows, map)[1];
-    map[x][y] = 4;
+    int x1 = get_random_free_space_with_min_distance_from_wall(ncols, nrows, map)[0];
+    int y1 = get_random_free_space_with_min_distance_from_wall(ncols, nrows, map)[1];
+    map[x1][y1] = 4;
+    // generate between 1 and MAX_ITEMS items
+    int n_items = rand() % MAX_ITEMS + 1;
+    for (int i = 0; i < n_items; i++) {
+        int x = get_random_free_space_with_min_distance_from_wall(ncols, nrows, map)[0];
+        int y = get_random_free_space_with_min_distance_from_wall(ncols, nrows, map)[1];
+        map[x][y] = rand() % 2 + 7; // 7 (knife) or 8 (sword)
+    }
 }
 
 // values that can be changed to make the map more or less random
@@ -128,8 +137,8 @@ void generate_map(int ncols, int nrows, int map[ncols][nrows]) {
         }
     }
 
-    // Generate an exit "x" door (number 4)
-    generate_exit_door(ncols, nrows, map);
+    // Generate an exit "x" door (number 4) and weapons
+    generate_especial_items(ncols, nrows, map);
 }
 
 // function that draws "#" as walls 1, and " " as empty space 0
@@ -145,6 +154,20 @@ void draw_map(int ncols, int nrows, int map[ncols][nrows]) {
                 mvprintw(j, i, "x");
                 attroff(A_BOLD);
                 attroff(COLOR_PAIR(COLOR_YELLOW));
+            } else if (map[i][j] == 7) {
+                attron(COLOR_PAIR(COLOR_GREEN));
+                attron(A_BOLD);
+                mvprintw(j, i, "k");
+                attroff(A_BOLD);
+                attroff(COLOR_PAIR(COLOR_GREEN));
+            } else if (map[i][j] == 8) {
+                attron(COLOR_PAIR(COLOR_GREEN));
+                attron(A_BOLD);
+                mvprintw(j, i, "s");
+                attroff(A_BOLD);
+                attroff(COLOR_PAIR(COLOR_GREEN));
+            } else {
+                mvprintw(j, i, " ");
             }
         }
     }

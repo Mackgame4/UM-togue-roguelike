@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <string.h>
 
-bool DEBUG = false;
+bool DEBUG = true;
 
 void draw_rectangle(int y1, int x1, int y2, int x2) {
     mvhline(y1, x1, 0, x2-x1);
@@ -36,6 +36,8 @@ void draw_debug_window(int ncols, int nrows, int map[ncols][nrows], PLAYER *play
                 if (map[i][j] == 2) attron(COLOR_PAIR(COLOR_BLUE));
                 else if (map[i][j] == 3) attron(COLOR_PAIR(COLOR_RED));
                 else if (map[i][j] == 4) attron(COLOR_PAIR(COLOR_YELLOW));
+                else if (map[i][j] == 7) attron(COLOR_PAIR(COLOR_GREEN));
+                else if (map[i][j] == 8) attron(COLOR_PAIR(COLOR_GREEN));
                 //mvprintw(j+8, i+1, "%d", map[i][j]);
                 mvprintw(j, i, "%d", map[i][j]);
                 attroff(COLOR_PAIR(COLOR_BLUE));

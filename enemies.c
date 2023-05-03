@@ -22,7 +22,7 @@ void draw_enemies(ENEMY enemies[], int enemy_count) {
         if (enemies[i].type == 0) {
             mvprintw(enemies[i].y, enemies[i].x, "z");
         } else if (enemies[i].type == 1) {
-            mvprintw(enemies[i].y, enemies[i].x, "s");
+            mvprintw(enemies[i].y, enemies[i].x, "e");
         } else if (enemies[i].type == 2) {
             mvprintw(enemies[i].y, enemies[i].x, "g");
         }

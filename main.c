@@ -21,25 +21,37 @@ bool is_game_ready = false;
 void update(int ncols, int nrows, int map[ncols][nrows], PLAYER *player) {
     int key = getch();
     switch(key) {
-        case KEY_UP: if (map[player->x][player->y-1] != 1) {
+        case KEY_UP: if (map[player->x][player->y-1] == 0) {
 			map[player->x][player->y] = 0;
 			player->y--;
 			map[player->x][player->y] = 2; // add player x and y to map as a 2 (so we can calculate the vision path and intersect with walls)
+			} else if (map[player->x][player->y-1] == DOOR_ID || map[player->x][player->y-1] == KNIFE_ID || map[player->x][player->y-1] == SWORD_ID) { // if the player is on a door, dont replace it
+				map[player->x][player->y] = 0; // always remove the ghost player from the map
+				player->y--;
 			} break;
-        case KEY_DOWN: if (map[player->x][player->y+1] != 1) {
+        case KEY_DOWN: if (map[player->x][player->y+1] == 0) {
 			map[player->x][player->y] = 0;
 			player->y++;
 			map[player->x][player->y] = 2;
+			} else if (map[player->x][player->y+1] == DOOR_ID || map[player->x][player->y+1] == KNIFE_ID || map[player->x][player->y+1] == SWORD_ID) {
+				map[player->x][player->y] = 0;
+				player->y++;
 			} break;
-        case KEY_LEFT: if (map[player->x-1][player->y] != 1) {
+        case KEY_LEFT: if (map[player->x-1][player->y] == 0) {
 			map[player->x][player->y] = 0;
 			player->x--;
 			map[player->x][player->y] = 2;
+			} else if (map[player->x-1][player->y] == DOOR_ID || map[player->x-1][player->y] == KNIFE_ID || map[player->x-1][player->y] == SWORD_ID) {
+				map[player->x][player->y] = 0;
+				player->x--;
 			} break;
-        case KEY_RIGHT: if (map[player->x+1][player->y] != 1) {
+        case KEY_RIGHT: if (map[player->x+1][player->y] == 0) {
 			map[player->x][player->y] = 0;
 			player->x++;
 			map[player->x][player->y] = 2;
+			} else if (map[player->x+1][player->y] == DOOR_ID || map[player->x+1][player->y] == KNIFE_ID || map[player->x+1][player->y] == SWORD_ID) {
+				map[player->x][player->y] = 0;
+				player->x++;
 			} break;
         case 27: in_menu = true; break; // 27 is the escape key
         case 113: in_menu = true; break; // 113 is the q key
@@ -125,54 +137,24 @@ void draw_hud(int ncols, int nrows, PLAYER player, ENEMY enemies[], int enemy_co
 	attroff(COLOR_PAIR(COLOR_BLUE));
 }
 
-void restart_game() {
-	is_game_ready = false;
-}
-
 // function that will check if the player is on top of an enemy (give damage) or on top of a weapon (pick it up) or on top of the exit (generate a new map)
-/*void check_player_collision(int ncols, int nrows, PLAYER *player, ENEMY enemies[], int *enemy_count, int map[ncols][nrows]) {
-	// Check if the player is on top of an enemy
-	for (int i = 0; i < *enemy_count; i++) {
-		if (player->x == enemies[i].x && player->y == enemies[i].y) {
-			// Player is on top of an enemy
-			// Give damage to the enemy
-			enemies[i].health -= get_weapon_damage(player->weapon);
-			// Check if the enemy is dead
-			if (enemies[i].health <= 0) {
-				// Enemy is dead
-				// Remove the enemy from the array
-				for (int j = i; j < *enemy_count-1; j++) {
-					enemies[j] = enemies[j+1];
+void check_player_collision(int ncols, int nrows, PLAYER *player, ENEMY enemies[], int *enemy_count, int map[ncols][nrows]) {
+	for (int i = 0; i < ncols; i++) {
+		for (int j = 0; j < nrows; j++) {
+			if (player->x == i && player->y == j) {
+				if (map[i][j] == 4) {
+					is_game_ready = false; // by changing this the main loop will generate a new map and set back to true
+				} else if (map[i][j] == 7) {
+					player->weapon = 1;
+					map[i][j] = 2; // set the player to be on top of the weapon (replacing it)
+				} else if (map[i][j] == 8) {
+					player->weapon = 2;
+					map[i][j] = 2;
 				}
-				*enemy_count -= 1;
-				// Remove the enemy from the map
-				map[enemies[i].x][enemies[i].y] = 0;
-			}
-			// Give damage to the player
-			player->health -= get_enemy_damage(enemies[i].type);
-			// Check if the player is dead
-			if (player->health <= 0) {
-				// Player is dead
-				restart_game();
 			}
 		}
 	}
-	// Check if the player is on top of a weapon
-	if (map[player->x][player->y] == 2) {
-		// Player is on top of a weapon
-		// Pick up the weapon
-		player->weapon = map[player->x][player->y];
-		// Remove the weapon from the map
-		map[player->x][player->y] = 0;
-	}
-	// Check if the player is on top of the exit
-	if (map[player->x][player->y] == 4) {
-		// Player is on top of the exit
-		restart_game();
-		is_game_ready = false;
-		in_menu = true;
-	}
-}*/
+}
 
 int main() {
 	// Initialize ncurses (game window)
@@ -232,6 +214,7 @@ int main() {
 			draw_hud(ncols, nrows, player, enemies, enemy_count);
 			// function that will check if the player is on top of an enemy (give damage) or on top of a weapon (pick it up) or on top of the exit (generate a new map)
 			// TODO: check_player_collision(ncols, nrows, &player, enemies, &enemy_count, map);
+			check_player_collision(ncols, nrows, &player, enemies, &enemy_count, map);
 			if (is_paused) {
 				draw_notification(ncols, nrows, notification);
 			}

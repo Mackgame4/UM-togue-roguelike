@@ -8,9 +8,11 @@
 #### TODO List
 - [x] Make the game playable;
 - [x] Add monsters;
-- [ ] Add items/chests;
-- [ ] Add door;
-- [ ] Fix map generation (make sure theres a way to exit the dungeon);
+- [x] Add items/chests;
+- [x] Add door;
+- [ ] Add notification when player reaches the door;
+- [ ] Add notification when player is in combat/picks an item;
+- [x] Fix map generation (make sure theres a way to exit the dungeon);
 - [ ] Combat;
 - [ ] Player vision;
 - [ ] Make monsters follow the player/attack;
