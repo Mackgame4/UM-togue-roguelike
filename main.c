@@ -127,11 +127,14 @@ void draw_hud(int ncols, int nrows, PLAYER player, ENEMY enemies[], int enemy_co
 	int string_offset = strlen("Equipped: ") + strlen(get_weapon_name(player.weapon));
 	attron(COLOR_PAIR(COLOR_BLUE));
 	attron(A_BOLD);
-	mvprintw(nrows, health_bar_max+2+string_offset+2-4, "%d Enemies: ", enemy_count);
+	mvprintw(nrows, health_bar_max+2+string_offset-2, "%d Enemies: ", enemy_count);
+	int string_offset2 = strlen("Enemies: ");
+	int free_space = ncols - (health_bar_max+2+string_offset+string_offset2); // Calculates the free space left till the end of the screen
+	int free_space_per_enemy = free_space / enemy_count;
 	for (int i = 0; i < enemy_count; i++) {
-		int enemy_health_bar_width = enemies[i].health * ncols / 2 / 100 / enemy_count;
-		int enemy_health_bar_max = 100 * ncols / 2 / 100 / enemy_count;
-		draw_bar(nrows, health_bar_max+2+string_offset+2+strlen("Enemies:  ")+i*enemy_health_bar_max, enemy_health_bar_width, enemy_health_bar_max, get_enemy_name(enemies[i].type));
+		int enemy_health_bar_width = enemies[i].health * free_space_per_enemy / 100;
+		int enemy_health_bar_max = 100 * free_space_per_enemy / 100;
+		draw_bar(nrows, health_bar_max+2+string_offset+2+string_offset2+i*free_space_per_enemy, enemy_health_bar_width, enemy_health_bar_max, get_enemy_name(enemies[i].type));
 	}
 	attroff(A_BOLD);
 	attroff(COLOR_PAIR(COLOR_BLUE));
@@ -177,7 +180,13 @@ int main() {
 	nrows = nrows-1; // Reserve the last row for the HUD
 	int map[ncols][nrows]; // Create a map with the same size as the window
 	PLAYER player;
-	int max_enemies = 5; // Maximum number of enemies
+	// if ncols is little max_enemies = 3, else max_enemies = 5
+	int max_enemies; // Maximum number of enemies // TODO: change to 5 after fixing the hud
+	if (ncols < 100) {
+		max_enemies = 3;
+	} else {
+		max_enemies = 5;
+	}
 	ENEMY enemies[max_enemies];
 
 	// Game Variables

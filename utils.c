@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <string.h>
 
-bool DEBUG = true;
+bool DEBUG = false;
 
 void draw_rectangle(int y1, int x1, int y2, int x2) {
     mvhline(y1, x1, 0, x2-x1);
