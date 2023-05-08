@@ -22,7 +22,7 @@ void update(int ncols, int nrows, int map[ncols][nrows], PLAYER *player) {
     int key = getch();
     switch(key) {
 		case 119: // 119 is the w key
-        case KEY_UP: if (map[player->x][player->y-1] == 0) {
+        case KEY_UP: if (!is_paused && map[player->x][player->y-1] == 0) {
 			map[player->x][player->y] = 0;
 			player->y--;
 			map[player->x][player->y] = 2; // add player x and y to map as a 2 (so we can calculate the vision path and intersect with walls)
@@ -31,7 +31,7 @@ void update(int ncols, int nrows, int map[ncols][nrows], PLAYER *player) {
 				player->y--;
 			} break;
 		case 115: // 115 is the s key
-        case KEY_DOWN: if (map[player->x][player->y+1] == 0) {
+        case KEY_DOWN: if (!is_paused && map[player->x][player->y+1] == 0) {
 			map[player->x][player->y] = 0;
 			player->y++;
 			map[player->x][player->y] = 2;
@@ -40,7 +40,7 @@ void update(int ncols, int nrows, int map[ncols][nrows], PLAYER *player) {
 				player->y++;
 			} break;
 		case 97: // 97 is the a key
-        case KEY_LEFT: if (map[player->x-1][player->y] == 0) {
+        case KEY_LEFT: if (!is_paused && map[player->x-1][player->y] == 0) {
 			map[player->x][player->y] = 0;
 			player->x--;
 			map[player->x][player->y] = 2;
@@ -49,7 +49,7 @@ void update(int ncols, int nrows, int map[ncols][nrows], PLAYER *player) {
 				player->x--;
 			} break;
 		case 100: // 100 is the d key
-        case KEY_RIGHT: if (map[player->x+1][player->y] == 0) {
+        case KEY_RIGHT: if (!is_paused && map[player->x+1][player->y] == 0) {
 			map[player->x][player->y] = 0;
 			player->x++;
 			map[player->x][player->y] = 2;
@@ -214,27 +214,27 @@ int main() {
 				exit(0); // or return 0;
 			}
 		} else {
+			// Only execute this code once (setup the game)
+			if (!is_game_ready) {
+				generate_map(ncols, nrows, map);
+				player.x = get_random_free_space_with_min_distance_from_wall(ncols, nrows, map)[0];
+				player.y = get_random_free_space_with_min_distance_from_wall(ncols, nrows, map)[1];
+				player.health = 100;
+				player.weapon = 0;
+				enemy_count = generate_enemies(ncols, nrows, map, enemies, max_enemies);
+				is_game_ready = true;
+			}
+			// Draw map and player every frame and listen for input
+			draw_map(ncols, nrows, map);
+			draw_player(player);
+			draw_enemies(enemies, enemy_count);
+			draw_hud(ncols, nrows, player, enemies, enemy_count);
 			if (is_paused) {
 				draw_notification(ncols, nrows, notification);
 			} else {
-				// Only execute this code once (setup the game)
-				if (!is_game_ready) {
-					generate_map(ncols, nrows, map);
-					player.x = get_random_free_space_with_min_distance_from_wall(ncols, nrows, map)[0];
-					player.y = get_random_free_space_with_min_distance_from_wall(ncols, nrows, map)[1];
-					player.health = 100;
-					player.weapon = 0;
-					enemy_count = generate_enemies(ncols, nrows, map, enemies, max_enemies);
-					is_game_ready = true;
-				}
-				// Draw map and player every frame and listen for input
-				draw_map(ncols, nrows, map);
-				draw_player(player);
-				draw_enemies(enemies, enemy_count);
-				draw_hud(ncols, nrows, player, enemies, enemy_count);
 				check_player_collision(ncols, nrows, &player, enemies, &enemy_count, map); // function that will check if the player is on top of an enemy (give damage) or on top of a weapon (pick it up) or on top of the exit (generate a new map)
-				draw_debug_window(ncols, nrows, map, &player);
 			}
+			draw_debug_window(ncols, nrows, map, &player);
 			update(ncols, nrows, map, &player);
 		}
 		refresh(); // Update the screen
