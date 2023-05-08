@@ -21,6 +21,7 @@ bool is_game_ready = false;
 void update(int ncols, int nrows, int map[ncols][nrows], PLAYER *player) {
     int key = getch();
     switch(key) {
+		case 119: // 119 is the w key
         case KEY_UP: if (map[player->x][player->y-1] == 0) {
 			map[player->x][player->y] = 0;
 			player->y--;
@@ -29,6 +30,7 @@ void update(int ncols, int nrows, int map[ncols][nrows], PLAYER *player) {
 				map[player->x][player->y] = 0; // always remove the ghost player from the map
 				player->y--;
 			} break;
+		case 115: // 115 is the s key
         case KEY_DOWN: if (map[player->x][player->y+1] == 0) {
 			map[player->x][player->y] = 0;
 			player->y++;
@@ -37,6 +39,7 @@ void update(int ncols, int nrows, int map[ncols][nrows], PLAYER *player) {
 				map[player->x][player->y] = 0;
 				player->y++;
 			} break;
+		case 97: // 97 is the a key
         case KEY_LEFT: if (map[player->x-1][player->y] == 0) {
 			map[player->x][player->y] = 0;
 			player->x--;
@@ -45,6 +48,7 @@ void update(int ncols, int nrows, int map[ncols][nrows], PLAYER *player) {
 				map[player->x][player->y] = 0;
 				player->x--;
 			} break;
+		case 100: // 100 is the d key
         case KEY_RIGHT: if (map[player->x+1][player->y] == 0) {
 			map[player->x][player->y] = 0;
 			player->x++;
@@ -57,6 +61,7 @@ void update(int ncols, int nrows, int map[ncols][nrows], PLAYER *player) {
         case 113: in_menu = true; break; // 113 is the q key
 		case 112: is_paused = !is_paused; break; // 112 is the p key
 		case 32: is_paused = false; break; // 32 is the space key
+		case 13: is_paused = false; break; // 13 is enter key
     }
 }
 
@@ -150,9 +155,13 @@ void check_player_collision(int ncols, int nrows, PLAYER *player, ENEMY enemies[
 				} else if (map[i][j] == 7) {
 					player->weapon = 1;
 					map[i][j] = 2; // set the player to be on top of the weapon (replacing it)
+					is_paused = true;
+					notification = "You picked up a Knife!";
 				} else if (map[i][j] == 8) {
 					player->weapon = 2;
 					map[i][j] = 2;
+					is_paused = true;
+					notification = "You picked up a Sword!";
 				}
 			}
 		}
@@ -180,9 +189,8 @@ int main() {
 	nrows = nrows-1; // Reserve the last row for the HUD
 	int map[ncols][nrows]; // Create a map with the same size as the window
 	PLAYER player;
-	// if ncols is little max_enemies = 3, else max_enemies = 5
-	int max_enemies; // Maximum number of enemies // TODO: change to 5 after fixing the hud
-	if (ncols < 100) {
+	int max_enemies; // Maximum number of enemies
+	if (ncols < 100) { // if ncols is little max_enemies = 3, else max_enemies = 5
 		max_enemies = 3;
 	} else {
 		max_enemies = 5;
@@ -206,28 +214,27 @@ int main() {
 				exit(0); // or return 0;
 			}
 		} else {
-			// Only execute this code once (setup the game)
-			if (!is_game_ready) {
-				generate_map(ncols, nrows, map);
-				player.x = get_random_free_space_with_min_distance_from_wall(ncols, nrows, map)[0];
-				player.y = get_random_free_space_with_min_distance_from_wall(ncols, nrows, map)[1];
-				player.health = 100;
-				player.weapon = 0;
-				enemy_count = generate_enemies(ncols, nrows, map, enemies, max_enemies);
-				is_game_ready = true;
-			}
-			// Draw map and player every frame and listen for input
-			draw_map(ncols, nrows, map);
-			draw_player(player);
-			draw_enemies(enemies, enemy_count);
-			draw_hud(ncols, nrows, player, enemies, enemy_count);
-			// function that will check if the player is on top of an enemy (give damage) or on top of a weapon (pick it up) or on top of the exit (generate a new map)
-			// TODO: check_player_collision(ncols, nrows, &player, enemies, &enemy_count, map);
-			check_player_collision(ncols, nrows, &player, enemies, &enemy_count, map);
 			if (is_paused) {
 				draw_notification(ncols, nrows, notification);
+			} else {
+				// Only execute this code once (setup the game)
+				if (!is_game_ready) {
+					generate_map(ncols, nrows, map);
+					player.x = get_random_free_space_with_min_distance_from_wall(ncols, nrows, map)[0];
+					player.y = get_random_free_space_with_min_distance_from_wall(ncols, nrows, map)[1];
+					player.health = 100;
+					player.weapon = 0;
+					enemy_count = generate_enemies(ncols, nrows, map, enemies, max_enemies);
+					is_game_ready = true;
+				}
+				// Draw map and player every frame and listen for input
+				draw_map(ncols, nrows, map);
+				draw_player(player);
+				draw_enemies(enemies, enemy_count);
+				draw_hud(ncols, nrows, player, enemies, enemy_count);
+				check_player_collision(ncols, nrows, &player, enemies, &enemy_count, map); // function that will check if the player is on top of an enemy (give damage) or on top of a weapon (pick it up) or on top of the exit (generate a new map)
+				draw_debug_window(ncols, nrows, map, &player);
 			}
-			draw_debug_window(ncols, nrows, map, &player);
 			update(ncols, nrows, map, &player);
 		}
 		refresh(); // Update the screen
