@@ -11,6 +11,7 @@
 // items
 #define KNIFE_ID 7
 #define SWORD_ID 8
+#define MEDKIT_ID 9
 
 // player state
 struct player {

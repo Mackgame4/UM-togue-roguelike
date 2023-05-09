@@ -64,6 +64,10 @@ void generate_especial_items(int ncols, int nrows, int map[ncols][nrows]) {
         int y = get_random_free_space_with_min_distance_from_wall(ncols, nrows, map)[1];
         map[x][y] = rand() % 2 + 7; // 7 (knife) or 8 (sword)
     }
+    // spawn a medkit by map
+    int x2 = get_random_free_space_with_min_distance_from_wall(ncols, nrows, map)[0];
+    int y2 = get_random_free_space_with_min_distance_from_wall(ncols, nrows, map)[1];
+    map[x2][y2] = 9;
 }
 
 // values that can be changed to make the map more or less random
@@ -164,6 +168,12 @@ void draw_map(int ncols, int nrows, int map[ncols][nrows]) {
                 attron(COLOR_PAIR(COLOR_GREEN));
                 attron(A_BOLD);
                 mvprintw(j, i, "s");
+                attroff(A_BOLD);
+                attroff(COLOR_PAIR(COLOR_GREEN));
+            } else if (map[i][j] == 9) {
+                attron(COLOR_PAIR(COLOR_GREEN));
+                attron(A_BOLD);
+                mvprintw(j, i, "m");
                 attroff(A_BOLD);
                 attroff(COLOR_PAIR(COLOR_GREEN));
             } else {

@@ -26,7 +26,7 @@ void update(int ncols, int nrows, int map[ncols][nrows], PLAYER *player) {
 			map[player->x][player->y] = 0;
 			player->y--;
 			map[player->x][player->y] = 2; // add player x and y to map as a 2 (so we can calculate the vision path and intersect with walls)
-			} else if (map[player->x][player->y-1] == DOOR_ID || map[player->x][player->y-1] == KNIFE_ID || map[player->x][player->y-1] == SWORD_ID) { // if the player is on a door, dont replace it
+			} else if (map[player->x][player->y-1] == DOOR_ID || map[player->x][player->y-1] == KNIFE_ID || map[player->x][player->y-1] == SWORD_ID || map[player->x][player->y-1] == MEDKIT_ID || map[player->x][player->y-1] == ENEMY_ID) { // if the player is on a door, dont replace it
 				map[player->x][player->y] = 0; // always remove the ghost player from the map
 				player->y--;
 			} break;
@@ -35,7 +35,7 @@ void update(int ncols, int nrows, int map[ncols][nrows], PLAYER *player) {
 			map[player->x][player->y] = 0;
 			player->y++;
 			map[player->x][player->y] = 2;
-			} else if (map[player->x][player->y+1] == DOOR_ID || map[player->x][player->y+1] == KNIFE_ID || map[player->x][player->y+1] == SWORD_ID) {
+			} else if (map[player->x][player->y+1] == DOOR_ID || map[player->x][player->y+1] == KNIFE_ID || map[player->x][player->y+1] == SWORD_ID || map[player->x][player->y+1] == MEDKIT_ID || map[player->x][player->y+1] == ENEMY_ID) {
 				map[player->x][player->y] = 0;
 				player->y++;
 			} break;
@@ -44,7 +44,7 @@ void update(int ncols, int nrows, int map[ncols][nrows], PLAYER *player) {
 			map[player->x][player->y] = 0;
 			player->x--;
 			map[player->x][player->y] = 2;
-			} else if (map[player->x-1][player->y] == DOOR_ID || map[player->x-1][player->y] == KNIFE_ID || map[player->x-1][player->y] == SWORD_ID) {
+			} else if (map[player->x-1][player->y] == DOOR_ID || map[player->x-1][player->y] == KNIFE_ID || map[player->x-1][player->y] == SWORD_ID || map[player->x-1][player->y] == MEDKIT_ID || map[player->x-1][player->y] == ENEMY_ID) {
 				map[player->x][player->y] = 0;
 				player->x--;
 			} break;
@@ -53,7 +53,7 @@ void update(int ncols, int nrows, int map[ncols][nrows], PLAYER *player) {
 			map[player->x][player->y] = 0;
 			player->x++;
 			map[player->x][player->y] = 2;
-			} else if (map[player->x+1][player->y] == DOOR_ID || map[player->x+1][player->y] == KNIFE_ID || map[player->x+1][player->y] == SWORD_ID) {
+			} else if (map[player->x+1][player->y] == DOOR_ID || map[player->x+1][player->y] == KNIFE_ID || map[player->x+1][player->y] == SWORD_ID || map[player->x+1][player->y] == MEDKIT_ID || map[player->x+1][player->y] == ENEMY_ID) {
 				map[player->x][player->y] = 0;
 				player->x++;
 			} break;
@@ -104,10 +104,10 @@ char* get_enemy_name(int enemy_type) {
 // TODO:
 int get_enemy_damage(int enemy_type) {
 	switch(enemy_type) {
-		case 0: return 5;
-		case 1: return 15;
-		case 2: return 20;
-		default: return 5;
+		case 0: return 3;
+		case 1: return 5;
+		case 2: return 10;
+		default: return 3;
 	}
 }
 
@@ -147,21 +147,67 @@ void draw_hud(int ncols, int nrows, PLAYER player, ENEMY enemies[], int enemy_co
 
 // function that will check if the player is on top of an enemy (give damage) or on top of a weapon (pick it up) or on top of the exit (generate a new map)
 void check_player_collision(int ncols, int nrows, PLAYER *player, ENEMY enemies[], int *enemy_count, int map[ncols][nrows]) {
+	// check if player collided with a special item
 	for (int i = 0; i < ncols; i++) {
 		for (int j = 0; j < nrows; j++) {
 			if (player->x == i && player->y == j) {
 				if (map[i][j] == 4) {
 					is_game_ready = false; // by changing this the main loop will generate a new map and set back to true
-				} else if (map[i][j] == 7) {
+				} else if (map[i][j] == KNIFE_ID) {
 					player->weapon = 1;
 					map[i][j] = 2; // set the player to be on top of the weapon (replacing it)
 					is_paused = true;
 					notification = "You picked up a Knife!";
-				} else if (map[i][j] == 8) {
+				} else if (map[i][j] == SWORD_ID) {
 					player->weapon = 2;
 					map[i][j] = 2;
 					is_paused = true;
 					notification = "You picked up a Sword!";
+				} else if (map[i][j] == MEDKIT_ID) {
+					player->health = 100;
+					map[i][j] = 2;
+					is_paused = true;
+					notification = "You picked up a Medkit!";
+				} else if (map[i][j] == ENEMY_ID) {
+					// combat logic
+					for (int k = 0; k < *enemy_count; k++) {
+						if (enemies[k].x == i && enemies[k].y == j) {
+							// player attacks enemy
+							enemies[k].health -= get_weapon_damage(player->weapon);
+							if (enemies[k].health <= 0) {
+								// enemy is dead
+								*enemy_count -= 1;
+								// remove enemy from the array
+								for (int l = k; l < *enemy_count; l++) {
+									enemies[l] = enemies[l+1];
+								}
+								// remove enemy from the map
+								map[i][j] = 2;
+								// add a new enemy to the map
+								int enemy_x = rand() % ncols;
+								int enemy_y = rand() % nrows;
+								while (map[enemy_x][enemy_y] != 2) {
+									enemy_x = rand() % ncols;
+									enemy_y = rand() % nrows;
+								}
+								map[enemy_x][enemy_y] = ENEMY_ID;
+								// show notification
+								is_paused = true;
+								notification = "You killed an enemy!";
+							} else {
+								// enemy is still alive
+								// enemy attacks player
+								player->health -= get_enemy_damage(enemies[k].type);
+								if (player->health <= 0) {
+									// player is dead
+									//is_game_ready = false;
+									is_paused = true;
+									notification = "You died!";
+									is_game_ready = false;
+								}
+							}
+						}
+					}
 				}
 			}
 		}
@@ -229,10 +275,12 @@ int main() {
 			draw_player(player);
 			draw_enemies(enemies, enemy_count);
 			draw_hud(ncols, nrows, player, enemies, enemy_count);
+			// TODO: player vision/lighting
 			if (is_paused) {
 				draw_notification(ncols, nrows, notification);
 			} else {
-				check_player_collision(ncols, nrows, &player, enemies, &enemy_count, map); // function that will check if the player is on top of an enemy (give damage) or on top of a weapon (pick it up) or on top of the exit (generate a new map)
+				check_player_collision(ncols, nrows, &player, enemies, &enemy_count, map);
+				// TODO: mobs movement/combat
 			}
 			draw_debug_window(ncols, nrows, map, &player);
 			update(ncols, nrows, map, &player);

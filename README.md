@@ -10,7 +10,7 @@
 - [x] Add monsters;
 - [x] Add items/chests;
 - [x] Add door;
-- [ ] Add notification when player reaches the door;
+- [x] Add notification when player reaches the door;
 - [ ] Add notification when player is in combat/picks an item;
 - [x] Fix map generation (make sure theres a way to exit the dungeon);
 - [ ] Combat;
