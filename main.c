@@ -69,7 +69,7 @@ void update(int ncols, int nrows, int map[ncols][nrows], PLAYER *player) {
 			} break;
         case 27: in_menu = true; break; // 27 is the escape key
         case 113: in_menu = true; break; // 113 is the q key
-		case 112: is_paused = !is_paused; break; // 112 is the p key
+		case 112: is_paused = !is_paused; notification = "The game is paused. Press P to continue."; break; // 112 is the p key
 		case 32: is_paused = false; break; // 32 is the space key
 		case 13: is_paused = false; break; // 13 is enter key
     }
@@ -193,6 +193,7 @@ void check_player_collision(int ncols, int nrows, PLAYER *player, ENEMY enemies[
 									enemies[l] = enemies[l+1];
 								}
 								// remove enemy from the map
+								// TODO: fix when player picks weapon/combat
 								map[i][j] = 2;
 								// add a new enemy to the map
 								int enemy_x = rand() % ncols;
@@ -220,6 +221,7 @@ void check_player_collision(int ncols, int nrows, PLAYER *player, ENEMY enemies[
 							// return player to the previous position so it doent loop the combat
 							player->x = prev_pos[0];
 							player->y = prev_pos[1];
+							map[prev_pos[0]][prev_pos[1]] = 2;
 						}
 					}
 				}
@@ -279,6 +281,7 @@ int main() {
 				generate_map(ncols, nrows, map);
 				player.x = get_random_free_space_with_min_distance_from_wall(ncols, nrows, map)[0];
 				player.y = get_random_free_space_with_min_distance_from_wall(ncols, nrows, map)[1];
+				map[player.x][player.y] = 2;
 				player.health = 100;
 				player.weapon = 0;
 				enemy_count = generate_enemies(ncols, nrows, map, enemies, max_enemies);
@@ -294,7 +297,7 @@ int main() {
 				draw_notification(ncols, nrows, notification);
 			} else {
 				check_player_collision(ncols, nrows, &player, enemies, &enemy_count, map);
-				// TODO: mobs movement/combat
+				// TODO: mobs movement
 			}
 			draw_debug_window(ncols, nrows, map, &player);
 			update(ncols, nrows, map, &player);
