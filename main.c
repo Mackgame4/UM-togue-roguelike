@@ -18,6 +18,8 @@ char *notification = "The game is paused. Press P to continue.";
 bool in_menu = true;
 bool is_game_ready = false;
 
+static int prev_pos[2]; // used to store the previous position of the player (to be used in the future)
+
 void update(int ncols, int nrows, int map[ncols][nrows], PLAYER *player) {
     int key = getch();
     switch(key) {
@@ -27,7 +29,9 @@ void update(int ncols, int nrows, int map[ncols][nrows], PLAYER *player) {
 			player->y--;
 			map[player->x][player->y] = 2; // add player x and y to map as a 2 (so we can calculate the vision path and intersect with walls)
 			} else if (map[player->x][player->y-1] == DOOR_ID || map[player->x][player->y-1] == KNIFE_ID || map[player->x][player->y-1] == SWORD_ID || map[player->x][player->y-1] == MEDKIT_ID || map[player->x][player->y-1] == ENEMY_ID) { // if the player is on a door, dont replace it
-				map[player->x][player->y] = 0; // always remove the ghost player from the map
+				prev_pos[0] = player->x;
+				prev_pos[1] = player->y;
+				map[prev_pos[0]][prev_pos[1]] = 0; // always remove the ghost player from the map
 				player->y--;
 			} break;
 		case 115: // 115 is the s key
@@ -36,7 +40,9 @@ void update(int ncols, int nrows, int map[ncols][nrows], PLAYER *player) {
 			player->y++;
 			map[player->x][player->y] = 2;
 			} else if (map[player->x][player->y+1] == DOOR_ID || map[player->x][player->y+1] == KNIFE_ID || map[player->x][player->y+1] == SWORD_ID || map[player->x][player->y+1] == MEDKIT_ID || map[player->x][player->y+1] == ENEMY_ID) {
-				map[player->x][player->y] = 0;
+				prev_pos[0] = player->x;
+				prev_pos[1] = player->y;
+				map[prev_pos[0]][prev_pos[1]] = 0;
 				player->y++;
 			} break;
 		case 97: // 97 is the a key
@@ -45,7 +51,9 @@ void update(int ncols, int nrows, int map[ncols][nrows], PLAYER *player) {
 			player->x--;
 			map[player->x][player->y] = 2;
 			} else if (map[player->x-1][player->y] == DOOR_ID || map[player->x-1][player->y] == KNIFE_ID || map[player->x-1][player->y] == SWORD_ID || map[player->x-1][player->y] == MEDKIT_ID || map[player->x-1][player->y] == ENEMY_ID) {
-				map[player->x][player->y] = 0;
+				prev_pos[0] = player->x;
+				prev_pos[1] = player->y;
+				map[prev_pos[0]][prev_pos[1]] = 0;
 				player->x--;
 			} break;
 		case 100: // 100 is the d key
@@ -54,7 +62,9 @@ void update(int ncols, int nrows, int map[ncols][nrows], PLAYER *player) {
 			player->x++;
 			map[player->x][player->y] = 2;
 			} else if (map[player->x+1][player->y] == DOOR_ID || map[player->x+1][player->y] == KNIFE_ID || map[player->x+1][player->y] == SWORD_ID || map[player->x+1][player->y] == MEDKIT_ID || map[player->x+1][player->y] == ENEMY_ID) {
-				map[player->x][player->y] = 0;
+				prev_pos[0] = player->x;
+				prev_pos[1] = player->y;
+				map[prev_pos[0]][prev_pos[1]] = 0;
 				player->x++;
 			} break;
         case 27: in_menu = true; break; // 27 is the escape key
@@ -104,10 +114,10 @@ char* get_enemy_name(int enemy_type) {
 // TODO:
 int get_enemy_damage(int enemy_type) {
 	switch(enemy_type) {
-		case 0: return 3;
-		case 1: return 5;
-		case 2: return 10;
-		default: return 3;
+		case 0: return 2;
+		case 1: return 3;
+		case 2: return 5;
+		default: return 2;
 	}
 }
 
@@ -175,6 +185,7 @@ void check_player_collision(int ncols, int nrows, PLAYER *player, ENEMY enemies[
 							// player attacks enemy
 							enemies[k].health -= get_weapon_damage(player->weapon);
 							if (enemies[k].health <= 0) {
+								enemies[k].health = 0;
 								// enemy is dead
 								*enemy_count -= 1;
 								// remove enemy from the array
@@ -206,6 +217,9 @@ void check_player_collision(int ncols, int nrows, PLAYER *player, ENEMY enemies[
 									is_game_ready = false;
 								}
 							}
+							// return player to the previous position so it doent loop the combat
+							player->x = prev_pos[0];
+							player->y = prev_pos[1];
 						}
 					}
 				}
