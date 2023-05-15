@@ -150,9 +150,45 @@ void generate_map(int ncols, int nrows, int map[ncols][nrows]) {
 // the objective its simples, if it encounters a wall, it will stop illuminating from there forward
 #include <math.h>
 
-int being_illuminated(int playerX, int playerY, int posX, int posY, int radius) {
-    int distance = sqrt(pow(playerX - posX, 2) + pow(playerY - posY, 2));
-    return (distance <= radius) ? 1 : 0;
+// TODO: fix the light system when it encounters a wall
+int circle_light = 1;
+int being_illuminated(int ncols, int nrows, int playerX, int playerY, int posX, int posY, int radius, int map[ncols][nrows]) {
+    if (circle_light == 1) {
+        int distance = sqrt(pow(playerX - posX, 2) + pow(playerY - posY, 2));
+        return (distance <= radius) ? 1 : 0;
+    } else {
+        int distance = sqrt(pow(playerX - posX, 2) + pow(playerY - posY, 2));
+
+        if (distance <= radius) {
+            // Check for wall intersections along the line
+            int dx = posX - playerX;
+            int dy = posY - playerY;
+            int steps = fmax(abs(dx), abs(dy));
+
+            float xInc = dx / (float)steps;
+            float yInc = dy / (float)steps;
+
+            float x = playerX;
+            float y = playerY;
+
+            for (int i = 0; i < steps; i++) {
+                x += xInc;
+                y += yInc;
+
+                int xFloor = (int)floor(x);
+                int yFloor = (int)floor(y);
+
+                if (map[xFloor][yFloor] == 1) {
+                    // Intersection with a wall, stop illuminating
+                    return 0;
+                }
+            }
+
+            return 1;
+        }
+
+        return 0;
+    }
 }
 
 int view_radius = 8;
@@ -165,7 +201,7 @@ void draw_map(int ncols, int nrows, int map[ncols][nrows], PLAYER *player, ENEMY
 
     for (int j = 0; j < nrows; j++) {
         for (int i = 0; i < ncols; i++) {
-            if (being_illuminated(playerX, playerY, i, j, radius)) {
+            if (being_illuminated(ncols, nrows, playerX, playerY, i, j, radius, map) || draw_all_map) {
                 if (map[i][j] == 1) {
                     mvprintw(j, i, "#");
                 } else if (map[i][j] == 4) {
@@ -211,7 +247,7 @@ void draw_map(int ncols, int nrows, int map[ncols][nrows], PLAYER *player, ENEMY
         int enemyX = enemies[k].x;
         int enemyY = enemies[k].y;
 
-        if (being_illuminated(playerX, playerY, enemyX, enemyY, radius)) {
+        if (being_illuminated(ncols, nrows, playerX, playerY, enemyX, enemyY, radius, map) || draw_all_map) {
             attron(COLOR_PAIR(COLOR_RED));
             attron(A_BOLD);
             if (enemies[k].type == 0) {

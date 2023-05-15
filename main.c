@@ -114,10 +114,10 @@ char* get_enemy_name(int enemy_type) {
 // TODO:
 int get_enemy_damage(int enemy_type) {
 	switch(enemy_type) {
-		case 0: return 2;
-		case 1: return 3;
-		case 2: return 5;
-		default: return 2;
+		case 0: return 5;
+		case 1: return 7;
+		case 2: return 10;
+		default: return 5;
 	}
 }
 

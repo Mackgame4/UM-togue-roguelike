@@ -11,10 +11,10 @@
 - [x] Add items/chests;
 - [x] Add door;
 - [x] Add notification when player reaches the door;
-- [ ] Add notification when player is in combat/picks an item;
+- [x] Add notification when player is in combat/picks an item;
 - [x] Fix map generation (make sure theres a way to exit the dungeon);
-- [ ] Combat;
-- [ ] Player vision;
+- [x] Combat;
+- [x] Player vision;
 - [ ] Make monsters follow the player/attack;
 
 ### How To Play
@@ -28,8 +28,8 @@ Keybindings:<br>
 <kbd>→</kbd> or <kbd>D</kbd> - Move Right<br>
 <kbd>ESC</kbd> or <kbd>Q</kbd> - Quit Game/Back to Menus<br>
 
-<!--***Developer Notes:***
-`Text`-->
+***Known Issues:***
+- When the player kills all the monsters in the level, the game crashes;
 
 ## Laboratórios de Informática II
 The game *Togue* was made in C, using the ncurses library for the graphical interface, and other libraries for the game logic. The game was made in scope of the course *"Laboratórios de Informática II"* from *Universidade do Minho*.

@@ -6,8 +6,8 @@
 #define PLAYER_ID 2
 #define ENEMY_ID 3
 #define DOOR_ID 4
-#define LIGHT_ID 5
-#define SOUND_ID 6
+//#define LIGHT_ID 5
+//#define SOUND_ID 6
 // items
 #define KNIFE_ID 7
 #define SWORD_ID 8
