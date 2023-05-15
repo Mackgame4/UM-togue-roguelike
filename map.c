@@ -145,40 +145,84 @@ void generate_map(int ncols, int nrows, int map[ncols][nrows]) {
     generate_especial_items(ncols, nrows, map);
 }
 
-// function that draws "#" as walls 1, and " " as empty space 0
-// also draws the door "x" as 4
-void draw_map(int ncols, int nrows, int map[ncols][nrows]) {
-    for (int i = 0; i < ncols; i++) {
-        for (int j = 0; j < nrows; j++) {
-            if (map[i][j] == 1) {
-                mvprintw(j, i, "#");
-            } else if (map[i][j] == 4) {
-                attron(COLOR_PAIR(COLOR_YELLOW));
-                attron(A_BOLD);
-                mvprintw(j, i, "x");
-                attroff(A_BOLD);
-                attroff(COLOR_PAIR(COLOR_YELLOW));
-            } else if (map[i][j] == 7) {
-                attron(COLOR_PAIR(COLOR_GREEN));
-                attron(A_BOLD);
-                mvprintw(j, i, "k");
-                attroff(A_BOLD);
-                attroff(COLOR_PAIR(COLOR_GREEN));
-            } else if (map[i][j] == 8) {
-                attron(COLOR_PAIR(COLOR_GREEN));
-                attron(A_BOLD);
-                mvprintw(j, i, "s");
-                attroff(A_BOLD);
-                attroff(COLOR_PAIR(COLOR_GREEN));
-            } else if (map[i][j] == 9) {
-                attron(COLOR_PAIR(COLOR_GREEN));
-                attron(A_BOLD);
-                mvprintw(j, i, "m");
-                attroff(A_BOLD);
-                attroff(COLOR_PAIR(COLOR_GREEN));
+// if its 0, is not being illuminated, if its 1, is being illuminated (draw items in function draw_map)
+// given a map and playerposition and a radius, it will illuminate the map
+// the objective its simples, if it encounters a wall, it will stop illuminating from there forward
+#include <math.h>
+
+int being_illuminated(int playerX, int playerY, int posX, int posY, int radius) {
+    int distance = sqrt(pow(playerX - posX, 2) + pow(playerY - posY, 2));
+    return (distance <= radius) ? 1 : 0;
+}
+
+int view_radius = 8;
+int draw_all_map = 0;
+
+void draw_map(int ncols, int nrows, int map[ncols][nrows], PLAYER *player, ENEMY enemies[], int enemy_count) {
+    int playerX = player->x;
+    int playerY = player->y;
+    int radius = view_radius;
+
+    for (int j = 0; j < nrows; j++) {
+        for (int i = 0; i < ncols; i++) {
+            if (being_illuminated(playerX, playerY, i, j, radius)) {
+                if (map[i][j] == 1) {
+                    mvprintw(j, i, "#");
+                } else if (map[i][j] == 4) {
+                    attron(COLOR_PAIR(COLOR_YELLOW));
+                    attron(A_BOLD);
+                    mvprintw(j, i, "x");
+                    attroff(A_BOLD);
+                    attroff(COLOR_PAIR(COLOR_YELLOW));
+                } else if (map[i][j] == 7) {
+                    attron(COLOR_PAIR(COLOR_GREEN));
+                    attron(A_BOLD);
+                    mvprintw(j, i, "k");
+                    attroff(A_BOLD);
+                    attroff(COLOR_PAIR(COLOR_GREEN));
+                } else if (map[i][j] == 8) {
+                    attron(COLOR_PAIR(COLOR_GREEN));
+                    attron(A_BOLD);
+                    mvprintw(j, i, "s");
+                    attroff(A_BOLD);
+                    attroff(COLOR_PAIR(COLOR_GREEN));
+                } else if (map[i][j] == 9) {
+                    attron(COLOR_PAIR(COLOR_GREEN));
+                    attron(A_BOLD);
+                    mvprintw(j, i, "m");
+                    attroff(A_BOLD);
+                    attroff(COLOR_PAIR(COLOR_GREEN));
+                } else if (map[i][j] == 0) {
+                    if (draw_all_map == 1) {
+                        mvprintw(j, i, " ");
+                    } else {
+                        mvprintw(j, i, "."); // draw light on ground/where the player can see, only if light mode is enabled
+                    }
+                } else {
+                    mvprintw(j, i, " ");
+                }
             } else {
                 mvprintw(j, i, " ");
             }
+        }
+    }
+
+    for (int k = 0; k < enemy_count; k++) {
+        int enemyX = enemies[k].x;
+        int enemyY = enemies[k].y;
+
+        if (being_illuminated(playerX, playerY, enemyX, enemyY, radius)) {
+            attron(COLOR_PAIR(COLOR_RED));
+            attron(A_BOLD);
+            if (enemies[k].type == 0) {
+                mvprintw(enemyY, enemyX, "z"); // if type is 0, it's a zombie "z"
+            } else if (enemies[k].type == 1) {
+                mvprintw(enemyY, enemyX, "s"); // if type is 1, it's a skeleton "s"
+            } else if (enemies[k].type == 2) {
+                mvprintw(enemyY, enemyX, "g"); // if type is 2, it's a ghost "g"
+            }
+            attroff(A_BOLD);
+            attroff(COLOR_PAIR(COLOR_RED));
         }
     }
 }

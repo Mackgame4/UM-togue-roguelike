@@ -9,8 +9,8 @@
 // Import game modules
 #include "types.h"
 #include "menus.c"
-#include "map.c"
 #include "utils.c"
+#include "map.c"
 #include "enemies.c"
 
 bool is_paused = false; // pause the game when a notification is displayed
@@ -288,9 +288,8 @@ int main() {
 				is_game_ready = true;
 			}
 			// Draw map and player every frame and listen for input
-			draw_map(ncols, nrows, map);
+			draw_map(ncols, nrows, map, &player, enemies, enemy_count);
 			draw_player(player);
-			draw_enemies(enemies, enemy_count);
 			draw_hud(ncols, nrows, player, enemies, enemy_count);
 			// TODO: player vision/lighting
 			if (is_paused) {
