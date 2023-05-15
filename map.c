@@ -151,7 +151,7 @@ void generate_map(int ncols, int nrows, int map[ncols][nrows]) {
 #include <math.h>
 
 // TODO: fix the light system when it encounters a wall
-int circle_light = 1;
+int circle_light = 0;
 int being_illuminated(int ncols, int nrows, int playerX, int playerY, int posX, int posY, int radius, int map[ncols][nrows]) {
     if (circle_light == 1) {
         int distance = sqrt(pow(playerX - posX, 2) + pow(playerY - posY, 2));
@@ -192,7 +192,10 @@ int being_illuminated(int ncols, int nrows, int playerX, int playerY, int posX, 
 }
 
 int view_radius = 8;
+
+// Map debug
 int draw_all_map = 0;
+int debug_light = 0; // draw walls
 
 void draw_map(int ncols, int nrows, int map[ncols][nrows], PLAYER *player, ENEMY enemies[], int enemy_count) {
     int playerX = player->x;
@@ -201,9 +204,16 @@ void draw_map(int ncols, int nrows, int map[ncols][nrows], PLAYER *player, ENEMY
 
     for (int j = 0; j < nrows; j++) {
         for (int i = 0; i < ncols; i++) {
+            if (map[i][j] == 1 && draw_all_map == 0 && debug_light == 0) {
+                // Skip drawing walls if not in draw_all_map mode
+                continue;
+            }
+
             if (being_illuminated(ncols, nrows, playerX, playerY, i, j, radius, map) || draw_all_map) {
                 if (map[i][j] == 1) {
+                    attron(COLOR_PAIR(COLOR_WHITE));
                     mvprintw(j, i, "#");
+                    attroff(COLOR_PAIR(COLOR_WHITE));
                 } else if (map[i][j] == 4) {
                     attron(COLOR_PAIR(COLOR_YELLOW));
                     attron(A_BOLD);
