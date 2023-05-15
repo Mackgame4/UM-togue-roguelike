@@ -30,6 +30,7 @@ Keybindings:<br>
 
 ***Known Issues:***
 - When the player kills all the monsters in the level, the game crashes;
+- The mobs don't follow the player/attack him; (not implemented yet/time limit)
 
 ## Laboratórios de Informática II
 The game *Togue* was made in C, using the ncurses library for the graphical interface, and other libraries for the game logic. The game was made in scope of the course *"Laboratórios de Informática II"* from *Universidade do Minho*.

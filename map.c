@@ -243,6 +243,7 @@ void draw_map(int ncols, int nrows, int map[ncols][nrows], PLAYER *player, ENEMY
                         mvprintw(j, i, " ");
                     } else {
                         mvprintw(j, i, "."); // draw light on ground/where the player can see, only if light mode is enabled
+                        //enemies_ai(ncols, nrows, map, player, enemies, enemy_count); // TODO: make enemies follow the player/attack him if he is in range
                     }
                 } else {
                     mvprintw(j, i, " ");
