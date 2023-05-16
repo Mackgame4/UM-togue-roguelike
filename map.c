@@ -151,8 +151,9 @@ void generate_map(int ncols, int nrows, int map[ncols][nrows]) {
 #include <math.h>
 
 // TODO: fix the light system when it encounters a wall
-int circle_light = 0;
+int circle_light;
 int being_illuminated(int ncols, int nrows, int playerX, int playerY, int posX, int posY, int radius, int map[ncols][nrows]) {
+    circle_light = get_menu_option_state(0);
     if (circle_light == 1) {
         int distance = sqrt(pow(playerX - posX, 2) + pow(playerY - posY, 2));
         return (distance <= radius) ? 1 : 0;

@@ -40,16 +40,29 @@ int draw_menu(int ncols, int nrows) {
 			wattroff(stdscr, A_BOLD);
         }
         if (selected_option == 1) {
+            attron(COLOR_PAIR(COLOR_YELLOW));
+			wattron(stdscr, A_BOLD);
+			wattron(stdscr, A_REVERSE);
+            mvprintw(nrows/2 + 2, ncols/2 - strlen("Options")/2, "Options");
+			wattroff(stdscr, A_REVERSE);
+			wattroff(stdscr, A_BOLD);
+            attroff(COLOR_PAIR(COLOR_YELLOW));
+        } else {
+			wattron(stdscr, A_BOLD);
+            mvprintw(nrows/2 + 2, ncols/2 - strlen("Options")/2, "Options");
+			wattroff(stdscr, A_BOLD);
+        }
+        if (selected_option == 2) {
             attron(COLOR_PAIR(COLOR_RED));
 			wattron(stdscr, A_BOLD);
 			wattron(stdscr, A_REVERSE);
-            mvprintw(nrows/2 + 2, ncols/2 - strlen("Exit")/2, "Exit");
+            mvprintw(nrows/2 + 3, ncols/2 - strlen("Exit")/2, "Exit");
 			wattroff(stdscr, A_REVERSE);
 			wattroff(stdscr, A_BOLD);
             attroff(COLOR_PAIR(COLOR_RED));
         } else {
 			wattron(stdscr, A_BOLD);
-            mvprintw(nrows/2 + 2, ncols/2 - strlen("Exit")/2, "Exit");
+            mvprintw(nrows/2 + 3, ncols/2 - strlen("Exit")/2, "Exit");
 			wattroff(stdscr, A_BOLD);
         }
         refresh();
@@ -59,10 +72,76 @@ int draw_menu(int ncols, int nrows) {
             case KEY_DOWN: selected_option++; break;
             case 13: return selected_option; break;
         }
-        if (selected_option < 0) {
-            selected_option = 1;
-        } else if (selected_option > 1) {
-            selected_option = 0;
-        }
+        if (selected_option < 0) selected_option = 2;
+        if (selected_option > 2) selected_option = 0;
     }
+}
+
+#define N_OPTIONS 1
+int enabled_options[N_OPTIONS] = {0};
+int draw_options_menu(int ncols, int nrows) {
+    int selected_option = 0;
+    while(1) {
+        erase();
+		draw_logo(ncols, nrows);
+        /*attron(COLOR_PAIR(COLOR_YELLOW));
+        wattron(stdscr, A_BOLD);
+        mvprintw(nrows/2 + 1, ncols/2 - strlen("Options")/2, "Options");
+        wattroff(stdscr, A_BOLD);
+        attroff(COLOR_PAIR(COLOR_YELLOW));*/
+        if (selected_option == 0) {
+            char *option_text = "Show all map";
+            if (enabled_options[0]) {
+                attron(COLOR_PAIR(COLOR_GREEN));
+                option_text = "Show all map - ON";
+            } else {
+                attron(COLOR_PAIR(COLOR_RED));
+                option_text = "Show all map - OFF";
+            }
+            wattron(stdscr, A_BOLD);
+            wattron(stdscr, A_REVERSE);
+            mvprintw(nrows/2 + 1, ncols/2 - strlen(option_text)/2, "%s", option_text);
+            wattroff(stdscr, A_REVERSE);
+            wattroff(stdscr, A_BOLD);
+            if (enabled_options[0]) {
+                attroff(COLOR_PAIR(COLOR_GREEN));
+            } else {
+                attroff(COLOR_PAIR(COLOR_RED));
+            }
+        } else {
+            wattron(stdscr, A_BOLD);
+            mvprintw(nrows/2 + 1, ncols/2 - strlen("Show all map")/2, "Show all map");
+            wattroff(stdscr, A_BOLD);
+        }
+        if (selected_option == N_OPTIONS) {
+            attron(COLOR_PAIR(COLOR_RED));
+            wattron(stdscr, A_BOLD);
+            wattron(stdscr, A_REVERSE);
+            mvprintw(nrows/2 + 3, ncols/2 - strlen("Back")/2, "Back");
+            wattroff(stdscr, A_REVERSE);
+            wattroff(stdscr, A_BOLD);
+            attroff(COLOR_PAIR(COLOR_RED));
+        } else {
+            wattron(stdscr, A_BOLD);
+            mvprintw(nrows/2 + 3, ncols/2 - strlen("Back")/2, "Back");
+            wattroff(stdscr, A_BOLD);
+        }
+        refresh();
+        int key = getch();
+        switch(key) {
+            case KEY_UP: selected_option--; break;
+            case KEY_DOWN: selected_option++; break;
+            case 13: if (selected_option == N_OPTIONS) {
+                return selected_option;
+            } else {
+                enabled_options[0] = !enabled_options[0];
+            } break;
+        }
+        if (selected_option < 0) selected_option = N_OPTIONS;
+        if (selected_option > N_OPTIONS) selected_option = 0;
+    }
+}
+
+int get_menu_option_state(int option) {
+    return enabled_options[option];
 }

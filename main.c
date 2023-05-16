@@ -272,6 +272,11 @@ int main() {
 			if (selected_option == 0) {
 				in_menu = false;
 			} else if (selected_option == 1) {
+				int option = draw_options_menu(ncols, nrows);
+				if (option == 0) {
+					in_menu = true;
+				}
+			} else if (selected_option == 2) {
 				endwin();
 				exit(0); // or return 0;
 			}
