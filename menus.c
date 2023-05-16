@@ -77,7 +77,7 @@ int draw_menu(int ncols, int nrows) {
     }
 }
 
-#define N_OPTIONS 1
+#define N_OPTIONS 4
 int enabled_options[N_OPTIONS] = {0};
 int draw_options_menu(int ncols, int nrows) {
     int selected_option = 0;
@@ -90,13 +90,13 @@ int draw_options_menu(int ncols, int nrows) {
         wattroff(stdscr, A_BOLD);
         attroff(COLOR_PAIR(COLOR_YELLOW));*/
         if (selected_option == 0) {
-            char *option_text = "Show all map";
+            char *option_text = "Circle light";
             if (enabled_options[0]) {
                 attron(COLOR_PAIR(COLOR_GREEN));
-                option_text = "Show all map - ON";
+                option_text = "Circle light - ON";
             } else {
                 attron(COLOR_PAIR(COLOR_RED));
-                option_text = "Show all map - OFF";
+                option_text = "Circle light - OFF";
             }
             wattron(stdscr, A_BOLD);
             wattron(stdscr, A_REVERSE);
@@ -110,20 +110,92 @@ int draw_options_menu(int ncols, int nrows) {
             }
         } else {
             wattron(stdscr, A_BOLD);
-            mvprintw(nrows/2 + 1, ncols/2 - strlen("Show all map")/2, "Show all map");
+            mvprintw(nrows/2 + 1, ncols/2 - strlen("Circle light")/2, "Circle light");
+            wattroff(stdscr, A_BOLD);
+        }
+        if (selected_option == 1) {
+            char *option_text = "Draw all map";
+            if (enabled_options[1]) {
+                attron(COLOR_PAIR(COLOR_GREEN));
+                option_text = "Draw all map - ON";
+            } else {
+                attron(COLOR_PAIR(COLOR_RED));
+                option_text = "Draw all map - OFF";
+            }
+            wattron(stdscr, A_BOLD);
+            wattron(stdscr, A_REVERSE);
+            mvprintw(nrows/2 + 2, ncols/2 - strlen(option_text)/2, "%s", option_text);
+            wattroff(stdscr, A_REVERSE);
+            wattroff(stdscr, A_BOLD);
+            if (enabled_options[1]) {
+                attroff(COLOR_PAIR(COLOR_GREEN));
+            } else {
+                attroff(COLOR_PAIR(COLOR_RED));
+            }
+        } else {
+            wattron(stdscr, A_BOLD);
+            mvprintw(nrows/2 + 2, ncols/2 - strlen("Draw all map")/2, "Draw all map");
+            wattroff(stdscr, A_BOLD);
+        }
+        if (selected_option == 2) {
+            char *option_text = "Debug light";
+            if (enabled_options[2]) {
+                attron(COLOR_PAIR(COLOR_GREEN));
+                option_text = "Debug light - ON";
+            } else {
+                attron(COLOR_PAIR(COLOR_RED));
+                option_text = "Debug light - OFF";
+            }
+            wattron(stdscr, A_BOLD);
+            wattron(stdscr, A_REVERSE);
+            mvprintw(nrows/2 + 3, ncols/2 - strlen(option_text)/2, "%s", option_text);
+            wattroff(stdscr, A_REVERSE);
+            wattroff(stdscr, A_BOLD);
+            if (enabled_options[2]) {
+                attroff(COLOR_PAIR(COLOR_GREEN));
+            } else {
+                attroff(COLOR_PAIR(COLOR_RED));
+            }
+        } else {
+            wattron(stdscr, A_BOLD);
+            mvprintw(nrows/2 + 3, ncols/2 - strlen("Debug light")/2, "Debug light");
+            wattroff(stdscr, A_BOLD);
+        }
+        if (selected_option == 3) {
+            char *option_text = "Debug mode";
+            if (enabled_options[3]) {
+                attron(COLOR_PAIR(COLOR_GREEN));
+                option_text = "Debug mode - ON";
+            } else {
+                attron(COLOR_PAIR(COLOR_RED));
+                option_text = "Debug mode - OFF";
+            }
+            wattron(stdscr, A_BOLD);
+            wattron(stdscr, A_REVERSE);
+            mvprintw(nrows/2 + 4, ncols/2 - strlen(option_text)/2, "%s", option_text);
+            wattroff(stdscr, A_REVERSE);
+            wattroff(stdscr, A_BOLD);
+            if (enabled_options[3]) {
+                attroff(COLOR_PAIR(COLOR_GREEN));
+            } else {
+                attroff(COLOR_PAIR(COLOR_RED));
+            }
+        } else {
+            wattron(stdscr, A_BOLD);
+            mvprintw(nrows/2 + 4, ncols/2 - strlen("Debug mode")/2, "Debug mode");
             wattroff(stdscr, A_BOLD);
         }
         if (selected_option == N_OPTIONS) {
             attron(COLOR_PAIR(COLOR_RED));
             wattron(stdscr, A_BOLD);
             wattron(stdscr, A_REVERSE);
-            mvprintw(nrows/2 + 3, ncols/2 - strlen("Back")/2, "Back");
+            mvprintw(nrows/2 + 6, ncols/2 - strlen("Back")/2, "Back");
             wattroff(stdscr, A_REVERSE);
             wattroff(stdscr, A_BOLD);
             attroff(COLOR_PAIR(COLOR_RED));
         } else {
             wattron(stdscr, A_BOLD);
-            mvprintw(nrows/2 + 3, ncols/2 - strlen("Back")/2, "Back");
+            mvprintw(nrows/2 + 6, ncols/2 - strlen("Back")/2, "Back");
             wattroff(stdscr, A_BOLD);
         }
         refresh();
@@ -134,7 +206,7 @@ int draw_options_menu(int ncols, int nrows) {
             case 13: if (selected_option == N_OPTIONS) {
                 return selected_option;
             } else {
-                enabled_options[0] = !enabled_options[0];
+                enabled_options[selected_option] = !enabled_options[selected_option];
             } break;
         }
         if (selected_option < 0) selected_option = N_OPTIONS;

@@ -296,7 +296,6 @@ int main() {
 			draw_map(ncols, nrows, map, &player, enemies, enemy_count);
 			draw_player(player);
 			draw_hud(ncols, nrows, player, enemies, enemy_count);
-			// TODO: player vision/lighting
 			if (is_paused) {
 				draw_notification(ncols, nrows, notification);
 			} else {

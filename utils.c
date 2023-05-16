@@ -1,8 +1,7 @@
 #include <ncurses.h>
-#include <stdbool.h>
 #include <string.h>
 
-bool DEBUG = false;
+int DEBUG;
 
 void draw_rectangle(int y1, int x1, int y2, int x2) {
     mvhline(y1, x1, 0, x2-x1);
@@ -16,7 +15,8 @@ void draw_rectangle(int y1, int x1, int y2, int x2) {
 }
 
 void draw_debug_window(int ncols, int nrows, int map[ncols][nrows], PLAYER *player) {
-    if (DEBUG) {
+    DEBUG = get_menu_option_state(3);
+    if (DEBUG == 1) {
         draw_rectangle(0, 0, 10, 30);
         attron(COLOR_PAIR(COLOR_BLUE));
         attron(A_BOLD);

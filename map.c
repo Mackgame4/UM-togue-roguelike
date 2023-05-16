@@ -195,10 +195,12 @@ int being_illuminated(int ncols, int nrows, int playerX, int playerY, int posX, 
 int view_radius = 8;
 
 // Map debug
-int draw_all_map = 0;
-int debug_light = 0; // draw walls
+int draw_all_map;
+int debug_light; // draw walls
 
 void draw_map(int ncols, int nrows, int map[ncols][nrows], PLAYER *player, ENEMY enemies[], int enemy_count) {
+    draw_all_map = get_menu_option_state(1);
+    debug_light = get_menu_option_state(2);
     int playerX = player->x;
     int playerY = player->y;
     int radius = view_radius;
