@@ -264,11 +264,11 @@ int main() {
 			} else {
 				check_player_collision(ncols, nrows, &player, enemies, &enemy_count, map);
 				// Check if enough time has passed since the last enemy movement
-				time_t current_time = time(NULL);
-				double time_diff = difftime(current_time, last_enemy_movement_time);
+				time_t current_time = time(NULL); // time_t is a type that stores the time (time.h)
+				double time_diff = difftime(current_time, last_enemy_movement_time); // difftime returns the difference between two times (time.h)
 				if (time_diff >= 0.8) { // moves every 0.8 seconds
 					enemies_ai(&killed_by_enemy, ncols, nrows, map, &player, enemies, enemy_count);
-					last_enemy_movement_time = current_time;
+					last_enemy_movement_time = current_time; // update the last enemy movement time to the current time
 				}
 				if (killed_by_enemy == 1) {
 					// player is dead by enemy
