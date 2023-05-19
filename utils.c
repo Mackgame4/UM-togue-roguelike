@@ -88,3 +88,39 @@ void initialize_colors() {
 	init_pair(COLOR_MAGENTA, COLOR_MAGENTA, COLOR_BLACK); // Magenta
 	init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_BLACK); // Cyan
 }
+
+char* get_weapon_name(int weapon) {
+	switch(weapon) {
+		case 0: return "Hand";
+		case 1: return "Knife";
+		case 2: return "Sword";
+		default: return "Hand";
+	}
+}
+
+int get_weapon_damage(int weapon) {
+	switch(weapon) {
+		case 0: return 10;
+		case 1: return 15;
+		case 2: return 20;
+		default: return 10;
+	}
+}
+
+char* get_enemy_name(int enemy_type) {
+	switch(enemy_type) {
+		case 0: return "Zombie";
+		case 1: return "Skeleton";
+		case 2: return "Ghost";
+		default: return "Zombie";
+	}
+}
+
+int get_enemy_damage(int enemy_type) {
+	switch(enemy_type) {
+		case 0: return 3;
+		case 1: return 5;
+		case 2: return 8;
+		default: return 3;
+	}
+}

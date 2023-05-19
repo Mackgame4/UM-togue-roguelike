@@ -2,7 +2,7 @@
 #include <stdlib.h> // imports exit function
 #include <ncurses.h>
 //#include <unistd.h> // imports sleep function (to be used in the future)
-//#include <time.h> // imports time function (to be used in the future)
+#include <time.h> // imports time function (to be used in the future)
 #include <string.h> // imports string functions
 #include <stdbool.h> // imports bool type
 
@@ -17,6 +17,7 @@ bool is_paused = false; // pause the game when a notification is displayed
 char *notification = "The game is paused. Press P to continue.";
 bool in_menu = true;
 bool is_game_ready = false;
+int killed_by_enemy = 0; // used to check if the player was killed by an enemy (lazy fix for the combat loop and dont use the is_paused variable as pointer, etc)
 
 static int prev_pos[2]; // used to store the previous position of the player (to be used in the future)
 
@@ -81,44 +82,6 @@ void draw_player(PLAYER player) {
 	mvprintw(player.y, player.x, "@");
 	attroff(A_BOLD);
 	attroff(COLOR_PAIR(COLOR_BLUE));
-}
-
-char* get_weapon_name(int weapon) {
-	switch(weapon) {
-		case 0: return "Hand";
-		case 1: return "Knife";
-		case 2: return "Sword";
-		default: return "Hand";
-	}
-}
-
-// TODO:
-int get_weapon_damage(int weapon) {
-	switch(weapon) {
-		case 0: return 10;
-		case 1: return 15;
-		case 2: return 20;
-		default: return 10;
-	}
-}
-
-char* get_enemy_name(int enemy_type) {
-	switch(enemy_type) {
-		case 0: return "Zombie";
-		case 1: return "Skeleton";
-		case 2: return "Ghost";
-		default: return "Zombie";
-	}
-}
-
-// TODO:
-int get_enemy_damage(int enemy_type) {
-	switch(enemy_type) {
-		case 0: return 5;
-		case 1: return 7;
-		case 2: return 10;
-		default: return 5;
-	}
 }
 
 // Shows player health, weapon, and enemies health in combat
@@ -211,8 +174,7 @@ void check_player_collision(int ncols, int nrows, PLAYER *player, ENEMY enemies[
 								// enemy attacks player
 								player->health -= get_enemy_damage(enemies[k].type);
 								if (player->health <= 0) {
-									// player is dead
-									//is_game_ready = false;
+									// player is dead during combat
 									is_paused = true;
 									notification = "You died!";
 									is_game_ready = false;
@@ -255,12 +217,13 @@ int main() {
 	if (ncols < 100) { // if ncols is little max_enemies = 3, else max_enemies = 5
 		max_enemies = 3;
 	} else {
-		max_enemies = 5;
+		max_enemies = 4; // 5
 	}
 	ENEMY enemies[max_enemies];
 
 	// Game Variables
 	int enemy_count = 0;
+	time_t last_enemy_movement_time = time(NULL); // Initialize the last enemy movement time to the current time
 
 	// Game loop
 	while(1) {
@@ -300,12 +263,26 @@ int main() {
 				draw_notification(ncols, nrows, notification);
 			} else {
 				check_player_collision(ncols, nrows, &player, enemies, &enemy_count, map);
-				// TODO: mobs movement
+				// Check if enough time has passed since the last enemy movement
+				time_t current_time = time(NULL);
+				double time_diff = difftime(current_time, last_enemy_movement_time);
+				if (time_diff >= 0.8) { // moves every 0.8 seconds
+					enemies_ai(&killed_by_enemy, ncols, nrows, map, &player, enemies, enemy_count);
+					last_enemy_movement_time = current_time;
+				}
+				if (killed_by_enemy == 1) {
+					// player is dead by enemy
+					is_paused = true;
+					notification = "You died!";
+					is_game_ready = false;
+					killed_by_enemy = 0;
+				}
 			}
 			draw_debug_window(ncols, nrows, map, &player);
 			update(ncols, nrows, map, &player);
 		}
 		refresh(); // Update the screen
 	}
+	endwin();
 	return 0;
 }
