@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h> // imports exit function
 #include <ncurses.h>
-//#include <unistd.h> // imports sleep function (to be used in the future)
-#include <time.h> // imports time function (to be used in the future)
+#include <time.h> // imports time function
 #include <string.h> // imports string functions
 #include <stdbool.h> // imports bool type
 
@@ -21,6 +20,10 @@ int killed_by_enemy = 0; // used to check if the player was killed by an enemy (
 
 static int prev_pos[2]; // used to store the previous position of the player (to be used in the future)
 
+/**
+ * a104168 - Jorge Rafael Fernandes
+ * Get de input do teclado e update do jogo.
+ */
 void update(int ncols, int nrows, int map[ncols][nrows], PLAYER *player) {
     int key = getch();
     switch(key) {
@@ -76,6 +79,10 @@ void update(int ncols, int nrows, int map[ncols][nrows], PLAYER *player) {
     }
 }
 
+/**
+ * a104168 - Jorge Rafael Fernandes
+ * Desenha jogador.
+ */
 void draw_player(PLAYER player) {
 	attron(COLOR_PAIR(COLOR_BLUE));
 	attron(A_BOLD);
@@ -84,6 +91,10 @@ void draw_player(PLAYER player) {
 	attroff(COLOR_PAIR(COLOR_BLUE));
 }
 
+/**
+ * a104365 - Fábio Magalhães
+ * Desenha o hud/ui durante o jogo, barras de vida, etc.
+ */
 // Shows player health, weapon, and enemies health in combat
 void draw_hud(int ncols, int nrows, PLAYER player, ENEMY enemies[], int enemy_count) {
 	// Draw player health
@@ -118,6 +129,10 @@ void draw_hud(int ncols, int nrows, PLAYER player, ENEMY enemies[], int enemy_co
 	attroff(COLOR_PAIR(COLOR_BLUE));
 }
 
+/**
+ * a104361 - Filipe Viana
+ * Verifica as ações/colisões do jogador com objetos e inimigos.
+ */
 // function that will check if the player is on top of an enemy (give damage) or on top of a weapon (pick it up) or on top of the exit (generate a new map)
 void check_player_collision(int ncols, int nrows, PLAYER *player, ENEMY enemies[], int *enemy_count, int map[ncols][nrows]) {
 	// check if player collided with a special item
@@ -156,16 +171,7 @@ void check_player_collision(int ncols, int nrows, PLAYER *player, ENEMY enemies[
 									enemies[l] = enemies[l+1];
 								}
 								// remove enemy from the map
-								// TODO: fix when player picks weapon/combat
-								map[i][j] = 2;
-								// add a new enemy to the map
-								int enemy_x = rand() % ncols;
-								int enemy_y = rand() % nrows;
-								while (map[enemy_x][enemy_y] != 2) {
-									enemy_x = rand() % ncols;
-									enemy_y = rand() % nrows;
-								}
-								map[enemy_x][enemy_y] = ENEMY_ID;
+								map[i][j] = 0; // put a 0 in the enemy position in the map
 								// show notification
 								is_paused = true;
 								notification = "You killed an enemy!";
@@ -192,6 +198,10 @@ void check_player_collision(int ncols, int nrows, PLAYER *player, ENEMY enemies[
 	}
 }
 
+/**
+ * a104365 - Fábio Magalhães e a104361 - Filipe Viana e a100536 - Pedro Rosário e a104168 - Jorge Rafael Fernandes
+ * Main loop do jogo.
+ */
 int main() {
 	// Initialize ncurses (game window)
 	WINDOW *win = initscr();

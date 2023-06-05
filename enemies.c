@@ -1,3 +1,7 @@
+/**
+ * a100536 - Pedro Rosário
+ * Gera inimigos.
+ */
 int generate_enemies(int ncols, int nrows, int map[ncols][nrows], ENEMY enemies[], int max_enemies) {
     int enemy_count = 0;
     //int random_enemy_count = rand() % max_enemies + 1; // 1 to max_enemies
@@ -13,6 +17,10 @@ int generate_enemies(int ncols, int nrows, int map[ncols][nrows], ENEMY enemies[
     return enemy_count;
 }
 
+/**
+ * a104168 - Jorge Rafael Fernandes
+ * Calcula o movimento/ai dos inimigos e o combate.
+ */
 // move enemies inside player vision towards the player
 void enemies_ai(int *killed_by_enemy, int ncols, int nrows, int map[ncols][nrows], PLAYER *player, ENEMY enemies[], int enemy_count) {
     // move the "3"s in the map array

@@ -2,6 +2,11 @@
 #include <stdlib.h>
 #include <time.h>
 
+
+/**
+ * a100536 - Pedro Rosário
+ * Seleciona uma posição random livre na matriz.
+ */
 // returns vector with 2 elements: x and y
 int* get_random_free_space(int ncols, int nrows, int map[ncols][nrows]) {
     int x, y;
@@ -16,6 +21,10 @@ int* get_random_free_space(int ncols, int nrows, int map[ncols][nrows]) {
     return coords;
 }
 
+/**
+ * a100536 - Pedro Rosário
+ * Seleciona uma posição random livre na matriz, a x espaços das paredes.
+ */
 // get random free space with a minimum distance from a wall (to avoid spawning player/enemies inside walls)
 int min_distance = 8;
 int* get_random_free_space_with_min_distance_from_wall(int ncols, int nrows, int map[ncols][nrows]) {
@@ -32,6 +41,10 @@ int* get_random_free_space_with_min_distance_from_wall(int ncols, int nrows, int
     return coords;
 }
 
+/**
+ * a104168 - Jorge Rafael Fernandes
+ * Gera no mapa os items especiais (armas e medkit) e a saida para o proximo nivel.
+ */
 #define MAX_ITEMS 3
 
 void generate_especial_items(int ncols, int nrows, int map[ncols][nrows]) {
@@ -70,9 +83,11 @@ void generate_especial_items(int ncols, int nrows, int map[ncols][nrows]) {
     map[x2][y2] = 9;
 }
 
+/**
+ * a104365 - Fábio Magalhães
+ * Gera a matriz do mapa.
+ */
 // values that can be changed to make the map more or less random
-int agglutination = 38; // chance of a rock to spawn
-int min_empty_space = 15; // minimum empty space between clusters to player to pass through
 
 // TODO: make sure theres a path from one side of the map to the other
 // add an "x" as exit of the map (go to next level) and make sure theres a path to it
@@ -93,19 +108,19 @@ void generate_map(int ncols, int nrows, int map[ncols][nrows]) {
     }
 
     // Smooth out the cave
-    for (int i = 0; i < 5; i++) {
-        for (int x = 1; x < ncols - 1; x++) {
-            for (int y = 1; y < nrows - 1; y++) {
-                int count = 0;
-                for (int dx = -1; dx <= 1; dx++) {
-                    for (int dy = -1; dy <= 1; dy++) {
-                        if (map[x + dx][y + dy] == 1) {
-                            count++;
+    for (int i = 0; i < 5; i++) { // 5 é o "smoother" do mapa (o 5 é numero pequeno pq assim salvamos iteração fazendo mais tarde o inverso)
+        for (int x = 1; x < ncols - 1; x++) { // exclude the borders
+            for (int y = 1; y < nrows - 1; y++) { // exclude the borders
+                int count = 0; // count neighbour rocks
+                for (int dx = -1; dx <= 1; dx++) { // entre -1 e 1 (vizinhos) vamos ver se temos rochas
+                    for (int dy = -1; dy <= 1; dy++) { // entre -1 e 1 (vizinhos) vamos ver se temos rochas
+                        if (map[x + dx][y + dy] == 1) { // se tivermos uma rocha
+                            count++; // contamos como vizinho
                         }
                     }
                 }
-                if (count > 4) {
-                    map[x][y] = 1;
+                if (count > 4) { // se tivermos mais de 4 vizinhos
+                    map[x][y] = 1; // colocamos uma rocha
                 } else if (count < 3) {
                     map[x][y] = 0;
                 }
@@ -150,6 +165,10 @@ void generate_map(int ncols, int nrows, int map[ncols][nrows]) {
 // the objective its simples, if it encounters a wall, it will stop illuminating from there forward
 #include <math.h>
 
+/**
+ * a104361 - Filipe Viana
+ * Calcula a luz/visão do jogador.
+ */
 // TODO: fix the light system when it encounters a wall
 int circle_light;
 int being_illuminated(int ncols, int nrows, int playerX, int playerY, int posX, int posY, int radius, int map[ncols][nrows]) {
@@ -192,7 +211,11 @@ int being_illuminated(int ncols, int nrows, int playerX, int playerY, int posX, 
     }
 }
 
-int view_radius = 8;
+/**
+ * a104365 - Fábio Magalhães
+ * Desenha mapa.
+ */
+int view_radius = 8; // vision/light radius/limits
 
 // Map debug
 int draw_all_map;

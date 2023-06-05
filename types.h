@@ -1,5 +1,10 @@
 // declares "PLAYER" AND ENEMY" classes
 
+/**
+ * a104365 - Fábio Magalhães
+ * Structs/types a serem usados durante as funções do jogo.
+ */
+
 // define numbers to represent different types of tiles in the map (prevents errors later)
 #define EMPTY_ID 0
 #define WALL_ID 1

@@ -3,6 +3,10 @@
 
 int DEBUG;
 
+/**
+ * a104361 - Filipe Viana
+ * Desenha um retangulo.
+ */
 void draw_rectangle(int y1, int x1, int y2, int x2) {
     mvhline(y1, x1, 0, x2-x1);
     mvhline(y2, x1, 0, x2-x1);
@@ -14,6 +18,10 @@ void draw_rectangle(int y1, int x1, int y2, int x2) {
     mvaddch(y2, x2, ACS_LRCORNER);
 }
 
+/**
+ * a104361 - Filipe Viana
+ * Desenha uma consola de debug (e o mapa em formato de matriz).
+ */
 void draw_debug_window(int ncols, int nrows, int map[ncols][nrows], PLAYER *player) {
     DEBUG = get_menu_option_state(3);
     if (DEBUG == 1) {
@@ -48,7 +56,10 @@ void draw_debug_window(int ncols, int nrows, int map[ncols][nrows], PLAYER *play
     }
 }
 
-int notify = 0;
+/**
+ * a104365 - Fábio Magalhães
+ * Desenha uma notificação com um texto e um botão "OK".
+ */
 void draw_notification(int ncols, int nrows, char *message) {
     int text_length = strlen(message);
     draw_rectangle(nrows/2-2, ncols/2-text_length/2-1, nrows/2, ncols/2+text_length/2);
@@ -62,6 +73,10 @@ void draw_notification(int ncols, int nrows, char *message) {
     attroff(A_BOLD);
 }
 
+/**
+ * a104361 - Filipe Viana
+ * Desenha uma barra colorida com um texto no meio.
+ */
 // draws a bar with a given percentage and a text inside (uses A_REVERSE to draw the bar)
 void draw_bar(int y, int x, int width, int max_width, char *text) {
     int text_length = strlen(text);
@@ -77,6 +92,10 @@ void draw_bar(int y, int x, int width, int max_width, char *text) {
     attroff(A_REVERSE);
 }
 
+/**
+ * a104365 - Fábio Magalhães
+ * Inicia as cores do ncurses.
+ */
 void initialize_colors() {
 	// init_pair(nome, cor, bgcor)
 	init_pair(COLOR_BLACK, COLOR_BLACK, COLOR_BLACK); // Initialize color pairs to black
@@ -89,6 +108,10 @@ void initialize_colors() {
 	init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_BLACK); // Cyan
 }
 
+/**
+ * a104365 - Fábio Magalhães
+ * Funções que simplificam o uso dos indeces dos objetos dados e retornam a informação correspondente (nomes ou ints).
+ */
 char* get_weapon_name(int weapon) {
 	switch(weapon) {
 		case 0: return "Hand";

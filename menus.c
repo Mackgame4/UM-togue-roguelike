@@ -1,5 +1,9 @@
 #include <ncurses.h>
 
+/**
+ * a100536 - Pedro Rosário
+ * Desenha o logo do jogo.
+ */
 void draw_logo(int ncols, int nrows) {
 	char* text_lines[] = {
     " _____              ",
@@ -20,6 +24,10 @@ void draw_logo(int ncols, int nrows) {
 	attroff(COLOR_PAIR(COLOR_RED));*/
 }
 
+/**
+ * a100536 - Pedro Rosário
+ * Desenha o menu.
+ */
 int draw_menu(int ncols, int nrows) {
     int selected_option = 0;
     int key;
@@ -77,6 +85,10 @@ int draw_menu(int ncols, int nrows) {
     }
 }
 
+/**
+ * a104168 - Jorge Rafael Fernandes
+ * Desenha o menu options dentro do menu principal.
+ */
 #define N_OPTIONS 4
 int enabled_options[N_OPTIONS] = {0};
 int draw_options_menu(int ncols, int nrows) {
@@ -214,6 +226,10 @@ int draw_options_menu(int ncols, int nrows) {
     }
 }
 
+/**
+ * a104168 - Jorge Rafael Fernandes
+ * Função auxiliar usada para obter o estado de uma opção do menu options.
+ */
 int get_menu_option_state(int option) {
     return enabled_options[option];
 }
