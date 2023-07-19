@@ -15,7 +15,7 @@
 - [x] Fix map generation (make sure theres a way to exit the dungeon);
 - [x] Combat;
 - [x] Player vision;
-- [ ] Make monsters follow the player/attack;
+- [x] Make monsters follow the player/attack;
 
 ### How To Play
 In this game you are a hero "**@**" that must fight different types of monsters "**z**"/"**j**"/etc. and collect chest items "**c**" to get to the next level exiting the dungeon "**x**".
