@@ -33,7 +33,7 @@ int* get_random_free_space_with_min_distance_from_wall(int ncols, int nrows, int
     do {
         x = rand() % ncols;
         y = rand() % nrows;
-    } while (map[x][y] != 0 || x < min_distance || x > ncols - min_distance || y < min_distance || y > nrows - min_distance);
+    } while (map[x][y] != 0 || x <= min_distance || x >= ncols - min_distance || y <= min_distance || y >= nrows - min_distance);
     static int coords[2]; // static so that the array is not destroyed after the function ends (it is destroyed after the function ends if it is not static)
     // or: int* coords = malloc(2 * sizeof(int));
     coords[0] = x;
