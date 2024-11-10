@@ -1,3 +1,6 @@
+# UM-togue-roguelike
+_🗂️ Course project for UM for LI2 in 2022/23_
+
 # Togue - Your text based rogue-like game
 <p align="center"><img src="https://i.imgur.com/tgatpXW.png" alt="Togue Roguelike" width="400"/></p>
 
